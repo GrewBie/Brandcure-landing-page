@@ -313,7 +313,7 @@ export function useVoiceNavigator({
           break;
         case "highlight":
           if (command.navId) {
-            focusNavItem(command.navId, true);
+            focusNavItem(command.navId, false);
           }
           break;
         case "play_video":
