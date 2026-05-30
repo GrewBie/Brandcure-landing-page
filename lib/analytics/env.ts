@@ -9,8 +9,13 @@ export function getGaMeasurementId(): string | undefined {
   return id || undefined;
 }
 
+/** BrandCure Microsoft Clarity project — override with env if needed. */
+export const DEFAULT_CLARITY_PROJECT_ID = "wz6v914r09";
+
 /** Microsoft Clarity project ID from Clarity → Settings → Setup. */
 export function getClarityProjectId(): string | undefined {
-  const id = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID?.trim();
+  const id =
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID?.trim() ||
+    DEFAULT_CLARITY_PROJECT_ID;
   return id || undefined;
 }
