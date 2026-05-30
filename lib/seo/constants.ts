@@ -1,7 +1,18 @@
-/** Canonical site URL — set NEXT_PUBLIC_SITE_URL in production. */
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
-  "https://brandcure.in";
+const DEFAULT_SITE_URL = "https://brandcure.in";
+
+/** Canonical site URL — set NEXT_PUBLIC_SITE_URL in Vercel (with https://). */
+export function resolveSiteUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) return DEFAULT_SITE_URL;
+  try {
+    const href = raw.startsWith("http") ? raw : `https://${raw}`;
+    return new URL(href).origin;
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
+
+export const SITE_URL = resolveSiteUrl();
 
 export const SITE_NAME = "BrandCure";
 

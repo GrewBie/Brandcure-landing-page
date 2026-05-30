@@ -31,6 +31,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Root Directory** — leave empty (`.`). The repo root already contains `package.json`. Do **not** set `Brandcure-landing-page` unless that folder exists in GitHub.
+2. **Environment variables** — copy from `.env.example`. Required for production:
+   - `NEXT_PUBLIC_SITE_URL` = `https://your-domain.com` (include `https://`)
+   - Sanity, Supabase, `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY` as needed
+3. **Redeploy** after changing env vars.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If the browser shows `(index):1` 404, the deployment root is usually wrong or the domain is not assigned to this project yet. Open the `*.vercel.app` URL from the Vercel dashboard first.
+
+`/favicon.ico` is served from `public/favicon.ico`.

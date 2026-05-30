@@ -126,7 +126,12 @@ export const rootMetadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
   },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
     apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
   },
 };
