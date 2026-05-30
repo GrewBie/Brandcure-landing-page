@@ -1,3 +1,7 @@
+import {
+  PORTFOLIO_AGENT_NAV_EVENT,
+  type PortfolioEntryParam,
+} from "@/lib/portfolio/portfolio-entry";
 import type { AgentSessionState } from "@/types/agent-state";
 
 /** After this many projects shown, Neha should move toward contact / lead capture. */
@@ -21,9 +25,14 @@ export function isOnPortfolioPage(): boolean {
   return window.location.pathname.startsWith("/portfolio");
 }
 
-export function goToPortfolioPage(entry = "see-work"): void {
+export function goToPortfolioPage(entry: PortfolioEntryParam = "see-work"): void {
   if (typeof window === "undefined") return;
-  const target = `/portfolio?entry=${entry}`;
   if (window.location.pathname.startsWith("/portfolio")) return;
-  window.location.assign(target);
+
+  if (entry === "agent") {
+    window.dispatchEvent(new CustomEvent(PORTFOLIO_AGENT_NAV_EVENT));
+    return;
+  }
+
+  window.location.assign(`/portfolio?entry=${entry}`);
 }

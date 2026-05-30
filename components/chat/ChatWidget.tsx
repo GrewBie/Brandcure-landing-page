@@ -31,6 +31,10 @@ import {
   voiceHeaderSubtitle,
   voiceStatusMessage,
 } from "@/lib/voice/chat-voice-copy";
+import {
+  hasPlayedNehaIntro,
+  markNehaIntroPlayed,
+} from "@/lib/portfolio/portfolio-entry";
 import { NEHA_DISPLAY_NAME, NEHA_INTRO_SPEECH } from "@/lib/voice/neha-intro";
 import { suggestVideo } from "@/lib/video-suggester";
 import type { NavItem, NavigatorSection } from "@/types/navigator";
@@ -185,17 +189,28 @@ export function ChatWidget() {
     setBadge(false);
     recordTurn("assistant", NEHA_INTRO_SPEECH, "voice");
     patchSession({ leadStage: "exploring" });
+    markNehaIntroPlayed();
     void speakOutbound(NEHA_INTRO_SPEECH).then(() => {
       startCall();
       introRunningRef.current = false;
     });
   }, [patchSession, recordTurn, setBadge, setOpen, speakOutbound, startCall]);
 
+  const resumeCallWithoutIntro = useCallback(() => {
+    setOpen(true);
+    setBadge(false);
+    if (!inCall) startCall();
+  }, [inCall, setBadge, setOpen, startCall]);
+
   useEffect(() => {
     if (introRequestId === 0 || introRequestId === lastIntroRef.current) return;
     lastIntroRef.current = introRequestId;
+    if (hasPlayedNehaIntro()) {
+      resumeCallWithoutIntro();
+      return;
+    }
     runIntro();
-  }, [introRequestId, runIntro]);
+  }, [introRequestId, runIntro, resumeCallWithoutIntro]);
 
   useEffect(() => {
     if (voiceRequestId === lastVoiceRequestRef.current) return;

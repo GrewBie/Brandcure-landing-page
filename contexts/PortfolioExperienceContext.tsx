@@ -1,5 +1,6 @@
 "use client";
 
+import { PORTFOLIO_MODE_KEY } from "@/lib/portfolio/portfolio-entry";
 import {
   createContext,
   useCallback,
@@ -10,8 +11,6 @@ import {
 } from "react";
 
 export type PortfolioTourMode = "ai" | "manual" | null;
-
-const MODE_KEY = "brandcure-portfolio-mode";
 
 type PortfolioExperienceContextValue = {
   mode: PortfolioTourMode;
@@ -39,14 +38,14 @@ export function PortfolioExperienceProvider({
   const setMode = useCallback((next: PortfolioTourMode) => {
     setModeState(next);
     if (typeof window !== "undefined") {
-      if (next) sessionStorage.setItem(MODE_KEY, next);
-      else sessionStorage.removeItem(MODE_KEY);
+      if (next) sessionStorage.setItem(PORTFOLIO_MODE_KEY, next);
+      else sessionStorage.removeItem(PORTFOLIO_MODE_KEY);
     }
   }, []);
 
   const loadStoredMode = useCallback(() => {
     if (typeof window === "undefined") return;
-    const stored = sessionStorage.getItem(MODE_KEY);
+    const stored = sessionStorage.getItem(PORTFOLIO_MODE_KEY);
     if (stored === "ai" || stored === "manual") {
       setModeState(stored);
     }

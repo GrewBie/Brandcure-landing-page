@@ -8,7 +8,7 @@ export function focusPortfolioItem(
   playVideo: boolean,
 ): void {
   if (!isOnPortfolioPage()) {
-    goToPortfolioPage("see-work");
+    goToPortfolioPage("agent");
     return;
   }
 
@@ -27,14 +27,14 @@ export function focusPortfolioItem(
 
 export function scrollPortfolioSection(section: NavigatorSection): void {
   if (!isOnPortfolioPage()) {
-    goToPortfolioPage("see-work");
+    goToPortfolioPage("agent");
     return;
   }
   browserNav.scrollToSection(section);
 }
 
 export function openPortfolioForTour(): void {
-  goToPortfolioPage("see-work");
+  goToPortfolioPage("agent");
 }
 
 export function dismissPortfolioSpotlight(): void {

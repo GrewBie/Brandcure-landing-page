@@ -4,6 +4,7 @@ import { AgentLeadSync } from "@/components/agent/AgentLeadSync";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
+import { PortfolioNavBridge } from "@/components/portfolio/PortfolioNavBridge";
 import { PortfolioExperienceProvider } from "@/contexts/PortfolioExperienceContext";
 import { HashScroll } from "@/components/layout/HashScroll";
 import { CustomCursor } from "@/components/ui/CustomCursor";
@@ -13,6 +14,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <NavCatalogProvider>
       <PortfolioExperienceProvider>
+        <PortfolioNavBridge />
         <AgentProvider>
           <ChatProvider>
             <AgentLeadSync />

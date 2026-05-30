@@ -3,6 +3,10 @@
 import { useChat } from "@/contexts/ChatContext";
 import { usePortfolioExperience } from "@/contexts/PortfolioExperienceContext";
 import { cn } from "@/lib/cn";
+import {
+  PORTFOLIO_WELCOME_SEEN_KEY,
+  markPortfolioAgentTour,
+} from "@/lib/portfolio/portfolio-entry";
 
 export function PortfolioWelcomeOverlay() {
   const { setOpen } = useChat();
@@ -12,7 +16,7 @@ export function PortfolioWelcomeOverlay() {
   if (!showWelcome) return null;
 
   const chooseAi = () => {
-    sessionStorage.setItem("brandcure-portfolio-welcome-seen", "1");
+    markPortfolioAgentTour();
     setMode("ai");
     setShowWelcome(false);
     setOpen(true);
@@ -20,7 +24,7 @@ export function PortfolioWelcomeOverlay() {
   };
 
   const chooseManual = () => {
-    sessionStorage.setItem("brandcure-portfolio-welcome-seen", "1");
+    sessionStorage.setItem(PORTFOLIO_WELCOME_SEEN_KEY, "1");
     setMode("manual");
     setShowWelcome(false);
   };
