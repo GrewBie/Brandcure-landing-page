@@ -42,6 +42,14 @@ export async function getPortfolioProjects(): Promise<PortfolioProject[]> {
     const mapped = rows
       .map(mapPortfolio)
       .filter((p): p is PortfolioProject => p !== null);
+    if (
+      process.env.NODE_ENV === "development" &&
+      mapped.length < rows.length
+    ) {
+      console.warn(
+        `[sanity] ${rows.length - mapped.length} portfolio item(s) skipped — need valid segment, hero image, and service type.`,
+      );
+    }
     return attachEngagementAndRank("portfolio", mapped);
   } catch (error) {
     console.error("[sanity] getPortfolioProjects:", error);

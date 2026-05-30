@@ -5,7 +5,7 @@ export const sanityClient = createClient({
   projectId: projectId || "placeholder",
   dataset,
   apiVersion,
-  /** CDN can lag a few seconds right after publish; API is fresher */
-  useCdn: process.env.NODE_ENV === "production",
+  /** Always hit the API for portfolio/blog — CDN can lag after publish. */
+  useCdn: false,
   perspective: "published",
 });
