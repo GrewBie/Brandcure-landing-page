@@ -1,15 +1,8 @@
+import { SOCIAL_ICON_COMPONENTS } from "@/components/icons/SocialIcons";
 import { Logo } from "@/components/layout/Logo";
 import { siteSettings } from "@/lib/mock-data";
 import { SOCIAL_LINKS } from "@/lib/social-links";
-import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
-
-const SOCIAL_ICONS = {
-  facebook: Facebook,
-  instagram: Instagram,
-  linkedin: Linkedin,
-  x: Twitter,
-} as const;
 
 const columns: {
   title: string;
@@ -66,7 +59,7 @@ export function Footer() {
               </p>
               <div className="mt-6 flex gap-2.5" role="list" aria-label="Social media">
                 {SOCIAL_LINKS.map(({ network, label, href }) => {
-                  const Icon = SOCIAL_ICONS[network];
+                  const Icon = SOCIAL_ICON_COMPONENTS[network];
                   return (
                     <a
                       key={network}
