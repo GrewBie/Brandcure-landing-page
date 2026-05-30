@@ -54,8 +54,12 @@ export interface PortfolioProject extends ContentEngagement {
   cardBg: string;
   /** Live site URL (websites projects). */
   websiteUrl?: string;
+  /** Site description (websiteProject CMS type). */
+  websiteDetails?: string;
   /** Single demo video URL (automation projects). */
   demoVideoUrl?: string;
+  /** Ad copy (creativeProject CMS type). */
+  adDescription?: string;
   /** Ad creatives (ai-ads projects). */
   adVideos?: PortfolioAdVideo[];
   /** Best preview video URL across the project's media, if any. */

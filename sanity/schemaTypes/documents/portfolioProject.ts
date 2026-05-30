@@ -21,8 +21,10 @@ const segments = [
 
 export const portfolioProject = defineType({
   name: "portfolioProject",
-  title: "Portfolio Project",
+  title: "Portfolio Project (legacy)",
   type: "document",
+  description:
+    "Deprecated — use Website Project, Automation Project, or AI Video Ad instead.",
   fields: [
     defineField({
       name: "title",

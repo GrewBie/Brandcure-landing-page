@@ -35,22 +35,61 @@ const BLOG_CATEGORIES: BlogCategory[] = [
   "AI & Tech",
 ];
 
+function resolveServiceType(raw: SanityPortfolioRaw): PortfolioServiceType | null {
+  if (SERVICE_TYPES.includes(raw.serviceType as PortfolioServiceType)) {
+    return raw.serviceType as PortfolioServiceType;
+  }
+  return null;
+}
+
+function resolveHeroImageUrl(raw: SanityPortfolioRaw): string | null {
+  return (
+    imageUrl(raw.heroImage, 800) ||
+    imageUrl(raw.thumbnail, 800) ||
+    null
+  );
+}
+
+function normalizeCopy(
+  raw: SanityPortfolioRaw,
+  serviceType: PortfolioServiceType,
+): { resultHeadline: string; resultDetail: string } {
+  const websiteDetails = raw.websiteDetails?.trim();
+  const adDescription = raw.adDescription?.trim();
+  const resultHeadline = raw.resultHeadline?.trim();
+  const resultDetail = raw.resultDetail?.trim();
+
+  if (serviceType === "websites") {
+    return {
+      resultHeadline: resultHeadline || raw.subtitle?.trim() || "Live website",
+      resultDetail: websiteDetails || resultDetail || "",
+    };
+  }
+
+  if (serviceType === "ai-ads") {
+    return {
+      resultHeadline: resultHeadline || raw.title?.trim() || "AI video ad",
+      resultDetail: adDescription || resultDetail || "",
+    };
+  }
+
+  return {
+    resultHeadline: resultHeadline || raw.title?.trim() || "Automation",
+    resultDetail: resultDetail || "",
+  };
+}
+
 export function mapPortfolio(
   raw: SanityPortfolioRaw,
 ): PortfolioProject | null {
-  if (!SERVICE_TYPES.includes(raw.serviceType as PortfolioServiceType)) {
-    return null;
-  }
-  if (!SEGMENTS.includes(raw.segment as PortfolioSegment)) {
-    return null;
-  }
+  const serviceType = resolveServiceType(raw);
+  if (!serviceType) return null;
+  if (!SEGMENTS.includes(raw.segment as PortfolioSegment)) return null;
 
-  const heroImageUrl = imageUrl(raw.heroImage, 800);
+  const heroImageUrl = resolveHeroImageUrl(raw);
   if (!heroImageUrl) return null;
 
-  const serviceType = raw.serviceType as PortfolioServiceType;
   const segment = raw.segment as PortfolioSegment;
-
   const automationSubtype = AUTOMATION_SUBTYPES.includes(
     raw.automationSubtype as PortfolioAutomationSubtype,
   )
@@ -58,14 +97,17 @@ export function mapPortfolio(
     : undefined;
 
   const tags = (raw.tags ?? []).map((t) => t.trim()).filter(Boolean);
-
-  const adVideos = mapAdVideos(raw.adVideos);
+  const adVideos = mapAdVideos(raw, serviceType);
   const websiteUrl = raw.websiteUrl?.trim() || undefined;
   const demoVideoUrl = raw.demoVideoUrl?.trim() || undefined;
+  const websiteDetails = raw.websiteDetails?.trim() || undefined;
+  const adDescription = raw.adDescription?.trim() || undefined;
+
+  const { resultHeadline, resultDetail } = normalizeCopy(raw, serviceType);
 
   const previewVideoUrl =
     serviceType === "ai-ads"
-      ? adVideos[0]?.videoUrl
+      ? raw.videoUrl?.trim() || adVideos[0]?.videoUrl
       : serviceType === "automation"
         ? demoVideoUrl
         : undefined;
@@ -89,12 +131,14 @@ export function mapPortfolio(
     segmentLabel: SEGMENT_LABEL[segment],
     subtitle: raw.subtitle,
     tags,
-    resultHeadline: raw.resultHeadline,
-    resultDetail: raw.resultDetail,
+    resultHeadline,
+    resultDetail,
     cardBg: raw.cardBg?.trim() || "#F5F0E8",
     heroImageUrl,
     websiteUrl,
+    websiteDetails,
     demoVideoUrl,
+    adDescription,
     adVideos: adVideos.length > 0 ? adVideos : undefined,
     previewVideoUrl,
     previewVideoType: previewVideoUrl
@@ -104,11 +148,24 @@ export function mapPortfolio(
 }
 
 function mapAdVideos(
-  raw: SanityPortfolioRaw["adVideos"],
+  raw: SanityPortfolioRaw,
+  serviceType: PortfolioServiceType,
 ): PortfolioAdVideo[] {
-  if (!raw?.length) return [];
+  if (serviceType === "ai-ads" && raw._type === "creativeProject") {
+    const videoUrl = raw.videoUrl?.trim();
+    if (!videoUrl) return [];
+    return [
+      {
+        title: raw.title?.trim() || "Ad creative",
+        videoUrl,
+        thumbnailUrl: imageUrl(raw.thumbnail, 800) || undefined,
+      },
+    ];
+  }
+
+  if (!raw.adVideos?.length) return [];
   const result: PortfolioAdVideo[] = [];
-  for (const item of raw) {
+  for (const item of raw.adVideos) {
     const videoUrl = item?.videoUrl?.trim();
     const title = item?.title?.trim();
     if (!videoUrl) continue;

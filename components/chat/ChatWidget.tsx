@@ -152,7 +152,7 @@ export function ChatWidget() {
           break;
         case "highlight":
           if (action.arg) {
-            focusPortfolioItem(catalogRef.current, action.arg, true);
+            focusPortfolioItem(catalogRef.current, action.arg, false);
           }
           break;
         case "play_video":

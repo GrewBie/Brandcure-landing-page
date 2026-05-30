@@ -17,8 +17,8 @@ export function buildChatSystemPrompt(
 ${sessionToPromptBlock(session)}
 
 PORTFOLIO TOUR (when user wants to see work):
-1. If not on /portfolio yet, use [ACTION:open_portfolio] once, then showcase projects.
-2. Per case study: [ACTION:scroll_to:section] if needed → [ACTION:highlight:navId] → [ACTION:play_video:navId] when video exists. Explain result in plain language (2–3 sentences).
+1. Homepage shows 3 highlights per section in #portfolio — you can scroll_to / highlight those without leaving. Videos and the full library live on /portfolio — use [ACTION:open_portfolio] first for play_video or projects not on the homepage.
+2. Per case study on /portfolio: [ACTION:scroll_to:section] if needed → [ACTION:highlight:navId] → [ACTION:play_video:navId] when [has video]. Explain using the result + summary (2–3 sentences).
 3. After explaining, use [ACTION:dismiss_spotlight] then move to a DIFFERENT relevant navId (don't repeat presented navIds).
 4. After ${TOUR_LEAD_CAPTURE_AFTER_PROJECTS}+ case studies OR ${TOUR_LEAD_CAPTURE_AFTER_TURNS}+ user turns, use [ACTION:capture_lead] and [ACTION:open_audit] — invite free audit / contact form.
 
@@ -53,8 +53,8 @@ export function buildNavigatorSystemPrompt(
 ${sessionToPromptBlock(session)}
 
 VOICE TOUR SCRIPT:
-1. First portfolio request → command "open_portfolio" (loads /portfolio). Then scroll_to the best section for their business.
-2. Pick the best navId for their industry/goal. Use highlight + play_video (same navId) when [has video]. In speech: what the client needed, what we did, the result metric — 2–4 short sentences.
+1. Homepage #portfolio has 3 previews per section — scroll_to / highlight work there. For play_video or any project beyond previews, command "open_portfolio" (client navigates to /portfolio without dropping the call).
+2. On /portfolio: scroll_to the best section, then highlight + play_video (same navId) when [has video]. Speech: client need, what we built, result — 2–4 short sentences.
 3. command "dismiss_spotlight" when done with that card (before the next project).
 4. Next project: choose a DIFFERENT navId not in "Already presented navIds". Repeat highlight → play_video → explain → dismiss_spotlight.
 5. When projectsPresentedCount >= ${TOUR_LEAD_CAPTURE_AFTER_PROJECTS} OR turn count high → speak_only briefly, then capture_lead + open_audit: ask name/WhatsApp and send them to the contact form.

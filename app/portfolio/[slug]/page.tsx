@@ -1,4 +1,5 @@
 import { EngagementPanel } from "@/components/engagement/EngagementPanel";
+import { PortfolioDetailExtras } from "@/components/portfolio/PortfolioDetailExtras";
 import { PortableTextContent } from "@/components/portable/PortableTextContent";
 import { getPortfolioBySlug, getPortfolioSlugs } from "@/lib/sanity/fetch";
 import Image from "next/image";
@@ -25,7 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) return { title: "Project not found" };
   return createMetadata({
     title: `${project.title} | BrandCure Portfolio`,
-    description: project.resultDetail || project.subtitle,
+    description:
+      project.websiteDetails ||
+      project.adDescription ||
+      project.resultDetail ||
+      project.subtitle,
     path: `/portfolio/${slug}`,
     image: project.heroImageUrl,
     imageAlt: project.title,
@@ -63,7 +68,13 @@ export default async function PortfolioProjectPage({ params }: Props) {
         <p className="mt-6 font-serif text-3xl text-charcoal">
           {project.resultHeadline}
         </p>
-        <p className="mt-3 max-w-xl text-gray">{project.resultDetail}</p>
+        <p className="mt-3 max-w-xl text-gray">
+          {project.serviceType === "websites"
+            ? project.websiteDetails || project.resultDetail
+            : project.serviceType === "ai-ads"
+              ? project.adDescription || project.resultDetail
+              : project.resultDetail}
+        </p>
         {project.tags.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {project.tags.map((tag) => (
@@ -86,10 +97,14 @@ export default async function PortfolioProjectPage({ params }: Props) {
             priority
           />
         </div>
-        <PortableTextContent value={project.body} />
-        {!project.body?.length && (
+        <PortfolioDetailExtras project={project} />
+        {project.serviceType === "automation" && (
+          <PortableTextContent value={project.body} />
+        )}
+        {project.serviceType === "automation" && !project.body?.length && (
           <p className="mt-10 max-w-[720px] rounded-lg border border-[var(--border)] bg-warm-white p-6 text-sm text-gray">
-            Add case study content in Sanity Studio to publish the full story.
+            Add the automation case study in Sanity Studio to publish the full
+            story.
           </p>
         )}
 

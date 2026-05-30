@@ -50,8 +50,8 @@ export function WebsiteCard({ project, section, index }: Props) {
           {project.title}
         </h3>
         <p className="mt-1 text-xs text-gray">{project.subtitle}</p>
-        <p className="mt-3 font-serif text-lg text-charcoal">
-          {project.resultHeadline}
+        <p className="mt-3 text-sm leading-relaxed text-charcoal">
+          {project.websiteDetails || project.resultDetail}
         </p>
         <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
           {[project.serviceTypeLabel, ...project.tags].map((tag) => (
@@ -67,7 +67,7 @@ export function WebsiteCard({ project, section, index }: Props) {
           href={`/portfolio/${project.slug}`}
           className="mt-4 inline-flex items-center text-[12px] font-semibold text-charcoal hover:text-gold"
         >
-          View full case study →
+          View details →
         </Link>
       </div>
     </article>

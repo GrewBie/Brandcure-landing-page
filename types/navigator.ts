@@ -22,6 +22,8 @@ export type NavItem = {
   posterUrl: string;
   /** Client segment label, e.g. "D2C". */
   industry: string;
+  /** Type-specific detail for Neha (website copy, ROI, ad description). */
+  agentSummary?: string;
   /** Lowercased keywords for matching (title, tags, segment, subtitle words). */
   keywords: string[];
 };

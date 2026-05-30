@@ -162,6 +162,12 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
         <p className="mt-3 font-serif text-lg text-charcoal">
           {project.resultHeadline}
         </p>
+        {(project.serviceType === "ai-ads" &&
+          (project.adDescription || project.resultDetail)) && (
+          <p className="mt-2 text-sm leading-relaxed text-gray">
+            {project.adDescription || project.resultDetail}
+          </p>
+        )}
         <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
           {[
             project.automationSubtypeLabel ?? project.serviceTypeLabel,

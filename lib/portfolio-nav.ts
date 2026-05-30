@@ -47,6 +47,19 @@ export function videoDomId(slug: string): string {
   return `video-${slug}`;
 }
 
+function agentSummaryFor(project: PortfolioProject): string | undefined {
+  if (project.serviceType === "websites") {
+    return project.websiteDetails || project.resultDetail || undefined;
+  }
+  if (project.serviceType === "ai-ads") {
+    return project.adDescription || project.resultDetail || undefined;
+  }
+  if (project.serviceType === "automation") {
+    return project.resultDetail || undefined;
+  }
+  return undefined;
+}
+
 function deriveKeywords(project: PortfolioProject): string[] {
   const raw = [
     project.title,
@@ -54,6 +67,9 @@ function deriveKeywords(project: PortfolioProject): string[] {
     project.segmentLabel,
     project.serviceTypeLabel,
     project.automationSubtypeLabel ?? "",
+    project.websiteDetails ?? "",
+    project.adDescription ?? "",
+    project.resultDetail,
     ...project.tags,
   ]
     .join(" ")
@@ -99,6 +115,7 @@ export function buildNavCatalog(projects: PortfolioProject[]): NavItem[] {
       videoProvider: url ? getVideoProvider(url) : undefined,
       posterUrl: project.heroImageUrl,
       industry: project.segmentLabel,
+      agentSummary: agentSummaryFor(project),
       keywords: deriveKeywords(project),
     };
   });
@@ -108,9 +125,11 @@ export function buildNavCatalog(projects: PortfolioProject[]): NavItem[] {
 export function catalogToPromptList(catalog: NavItem[]): string {
   if (catalog.length === 0) return "(no projects published yet)";
   return catalog
-    .map(
-      (item) =>
-        `- navId="${item.navId}" | section=${item.navSection} | "${item.title}" (${item.industry}) — ${item.result}${item.videoUrl ? " [has video]" : ""}`,
-    )
+    .map((item) => {
+      const summary = item.agentSummary
+        ? ` | ${item.agentSummary.slice(0, 120)}${item.agentSummary.length > 120 ? "…" : ""}`
+        : "";
+      return `- navId="${item.navId}" | section=${item.navSection} | "${item.title}" (${item.industry}) — ${item.result}${item.videoUrl ? " [has video]" : ""}${summary}`;
+    })
     .join("\n");
 }

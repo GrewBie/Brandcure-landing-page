@@ -65,7 +65,12 @@ export function Portfolio({
 
         <div className="flex flex-col gap-14">
           {grouped.map(({ section, label, projects }, groupIndex) => (
-            <div key={section}>
+            <div
+              key={section}
+              data-nav-section={section}
+              data-nav-title={label}
+              className="scroll-mt-24"
+            >
               <Reveal delay={groupIndex * 0.05}>
                 <h3 className="mb-6 font-serif text-2xl font-medium text-brand-black">
                   {label}
