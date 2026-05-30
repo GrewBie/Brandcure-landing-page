@@ -2,7 +2,7 @@ import type { AgentMessage, AgentSessionState } from "@/types/agent-state";
 
 const LEAD_ID_KEY = "brandcure-lead-id";
 
-function conversationSummary(messages: AgentMessage[], max = 8): string {
+function conversationSummary(messages: AgentMessage[], max = 12): string {
   return messages
     .slice(-max)
     .map((m) => `${m.role === "user" ? "Visitor" : "Neha"}: ${m.content}`)
@@ -32,26 +32,47 @@ function buildPayload(
   };
 }
 
+/** Fingerprint for deduping rapid session updates. */
+export function leadSyncFingerprint(session: AgentSessionState): string {
+  return [
+    session.name ?? "",
+    session.phone ?? "",
+    session.business ?? "",
+    session.city ?? "",
+    session.challenge ?? "",
+    session.leadStage ?? "",
+    String(session.turnCount),
+  ].join("|");
+}
+
+/** Enough dialogue to store anything meaningful. */
 export function shouldSyncAgentLead(
   session: AgentSessionState,
   messages: AgentMessage[],
 ): boolean {
   if (typeof window === "undefined") return false;
+  if (!messages.some((m) => m.role === "user")) return false;
 
   const hasContact = Boolean(session.name?.trim() || session.phone?.trim());
+  const hasBusiness = Boolean(session.business?.trim());
   const hasQualifying =
     session.leadStage === "qualifying" ||
     session.leadStage === "ready" ||
     session.leadStage === "captured";
-  const hasBusinessContext =
-    Boolean(session.business?.trim()) && session.turnCount >= 2;
-  const hasEnoughDialogue = session.turnCount >= 4;
 
+  return hasContact || hasBusiness || hasQualifying || session.turnCount >= 2;
+}
+
+/** Name, business, or phone captured — notify team right away. */
+export function shouldSyncAgentLeadImmediately(
+  session: AgentSessionState,
+  messages: AgentMessage[],
+): boolean {
+  if (!shouldSyncAgentLead(session, messages)) return false;
   return (
-    hasContact ||
-    hasQualifying ||
-    hasBusinessContext ||
-    hasEnoughDialogue
+    Boolean(session.business?.trim()) ||
+    Boolean(session.name?.trim()) ||
+    Boolean(session.phone?.trim())
   );
 }
 

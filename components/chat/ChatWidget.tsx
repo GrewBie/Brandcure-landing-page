@@ -2,11 +2,14 @@
 
 import { ChatLeadForm } from "@/components/chat/ChatLeadForm";
 import { VideoSuggestionCard } from "@/components/chat/VideoSuggestionCard";
+import { ConversationalOrb } from "@/components/voice/ConversationalOrb";
 import { useAgent } from "@/contexts/AgentContext";
 import { useChat } from "@/contexts/ChatContext";
 import { useNavCatalog } from "@/contexts/NavCatalogContext";
 import { usePortfolioExperience } from "@/contexts/PortfolioExperienceContext";
-import { useVoiceNavigator } from "@/hooks/useVoiceNavigator";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useVoiceNavigator, type VoiceState } from "@/hooks/useVoiceNavigator";
+import { usePathname } from "next/navigation";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { parseAgentResponse, type ChatAction } from "@/lib/chat-actions";
 import {
@@ -43,7 +46,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const SECTIONS: NavigatorSection[] = ["creatives", "automations", "websites"];
 
+function orbStatusShort(state: VoiceState, inCall: boolean): string {
+  if (!inCall) return "Tap to talk with Neha";
+  if (state === "listening") return "Your turn — speak now";
+  if (state === "speaking") return "Neha is speaking";
+  if (state === "thinking") return "Neha is thinking";
+  return "Voice call active";
+}
+
 export function ChatWidget() {
+  const pathname = usePathname();
+  const isMobile = useIsMobile();
   const { open, setOpen, badge, setBadge } = useChat();
   const {
     session,
@@ -52,7 +65,11 @@ export function ChatWidget() {
     patchSession,
   } = useAgent();
   const { catalog, voiceRequestId } = useNavCatalog();
-  const { introRequestId } = usePortfolioExperience();
+  const { introRequestId, mode: portfolioMode } = usePortfolioExperience();
+  const onPortfolio = pathname?.startsWith("/portfolio") ?? false;
+  const portfolioMobileVoice =
+    onPortfolio && isMobile && portfolioMode !== "manual";
+  const [showMobileTextChat, setShowMobileTextChat] = useState(false);
 
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -158,7 +175,7 @@ export function ChatWidget() {
           break;
         }
         case "open_voice":
-          setOpen(true);
+          if (!portfolioMobileVoice) setOpen(true);
           if (!inCall) startCall();
           break;
         case "open_audit":
@@ -179,13 +196,13 @@ export function ChatWidget() {
           break;
       }
     },
-    [findItem, inCall, openLeadCapture, setOpen, startCall],
+    [findItem, inCall, openLeadCapture, portfolioMobileVoice, setOpen, startCall],
   );
 
   const runIntro = useCallback(() => {
     if (introRunningRef.current) return;
     introRunningRef.current = true;
-    setOpen(true);
+    if (!portfolioMobileVoice) setOpen(true);
     setBadge(false);
     recordTurn("assistant", NEHA_INTRO_SPEECH, "voice");
     patchSession({ leadStage: "exploring" });
@@ -194,13 +211,21 @@ export function ChatWidget() {
       startCall();
       introRunningRef.current = false;
     });
-  }, [patchSession, recordTurn, setBadge, setOpen, speakOutbound, startCall]);
+  }, [
+    patchSession,
+    recordTurn,
+    portfolioMobileVoice,
+    setBadge,
+    setOpen,
+    speakOutbound,
+    startCall,
+  ]);
 
   const resumeCallWithoutIntro = useCallback(() => {
-    setOpen(true);
+    if (!portfolioMobileVoice) setOpen(true);
     setBadge(false);
     if (!inCall) startCall();
-  }, [inCall, setBadge, setOpen, startCall]);
+  }, [inCall, portfolioMobileVoice, setBadge, setOpen, startCall]);
 
   useEffect(() => {
     if (introRequestId === 0 || introRequestId === lastIntroRef.current) return;
@@ -283,8 +308,8 @@ export function ChatWidget() {
   };
 
   const toggleVoiceCall = () => {
-    setOpen(true);
     setBadge(false);
+    if (!portfolioMobileVoice) setOpen(true);
     if (inCall) endCall();
     else startCall();
   };
@@ -292,7 +317,12 @@ export function ChatWidget() {
   const closeChat = () => {
     if (inCall) endCall();
     setOpen(false);
+    setShowMobileTextChat(false);
   };
+
+  const showFullChatPanel = portfolioMobileVoice
+    ? showMobileTextChat
+    : open;
 
   const liveVoiceLine =
     inCall && voiceState === "listening"
@@ -302,10 +332,50 @@ export function ChatWidget() {
         : "";
 
   return (
-    <div className="fixed bottom-6 right-6 z-[500] md:bottom-8 md:right-8">
-      {open && (
+    <>
+      {portfolioMobileVoice && (
         <div
-          className="animate-slide-up mb-3 flex h-[min(580px,calc(100vh-120px))] w-[min(392px,calc(100vw-48px))] flex-col overflow-hidden rounded-[18px] border border-[var(--border)] bg-warm-white shadow-[0_32px_90px_rgba(0,0,0,0.22)]"
+          className="fixed bottom-5 left-4 z-[500] flex flex-col items-center gap-2 md:hidden"
+          aria-label="Neha voice assistant"
+        >
+          <p
+            className="m-0 max-w-[min(200px,55vw)] rounded-full bg-charcoal/90 px-3 py-1.5 text-center text-[10px] font-medium leading-snug text-white shadow-lg backdrop-blur-sm"
+            role="status"
+            aria-live="polite"
+          >
+            {orbStatusShort(voiceState, inCall)}
+          </p>
+          <ConversationalOrb
+            state={voiceState}
+            inCall={inCall}
+            onClick={toggleVoiceCall}
+            size="lg"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setShowMobileTextChat((v) => {
+                const next = !v;
+                if (!next) setOpen(false);
+                return next;
+              });
+            }}
+            className="cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-1 text-[10px] font-semibold text-charcoal shadow-sm"
+          >
+            {showMobileTextChat ? "Hide text" : "Type instead"}
+          </button>
+        </div>
+      )}
+
+      <div className="fixed bottom-6 right-6 z-[500] md:bottom-8 md:right-8">
+      {showFullChatPanel && (
+        <div
+          className={cn(
+            "animate-slide-up mb-3 flex flex-col overflow-hidden rounded-[18px] border border-[var(--border)] bg-warm-white shadow-[0_32px_90px_rgba(0,0,0,0.22)]",
+            portfolioMobileVoice
+              ? "fixed bottom-28 left-4 right-4 z-[501] max-h-[min(52vh,420px)] w-auto"
+              : "h-[min(580px,calc(100vh-120px))] w-[min(392px,calc(100vw-48px))]",
+          )}
           role="dialog"
           aria-label="Neha — BrandCure AI advisor"
         >
@@ -569,6 +639,7 @@ export function ChatWidget() {
         </div>
       )}
 
+      {!portfolioMobileVoice && (
       <div className="relative ml-auto w-14">
         {badge && !open && (
           <span className="animate-pop-in absolute -top-1 -right-1 z-[1] flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-cream bg-gold text-[9px] font-bold text-white">
@@ -608,6 +679,8 @@ export function ChatWidget() {
           </span>
         )}
       </div>
-    </div>
+      )}
+      </div>
+    </>
   );
 }

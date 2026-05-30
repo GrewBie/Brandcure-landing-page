@@ -41,7 +41,7 @@ ACTION TAGS — end of message only, max 2 per message (except capture flow may 
 
 STATE: [STATE:{"name","phone","business","city","challenge","interest","leadStage","lastProjectNavId","lastProjectTitle","projectsPresentedCount"}]
 
-Rules: only real navIds; never invent projects; update STATE when you learn contact details.`;
+Rules: only real navIds; never invent projects. When the user shares their name, business, city, or what they do, always include [STATE:{"name":"...","business":"...","city":"...","leadStage":"qualifying"}] — we notify the team immediately.`;
 }
 
 export function buildNavigatorSystemPrompt(
@@ -81,5 +81,6 @@ Rules:
 - play_video requires highlight on same navId first (same turn: prefer play_video with navId).
 - Never repeat a navId already in presentedNavIds unless user asks.
 - If navId invalid, speak_only + clarify.
-- capture_lead + open_audit when closing the tour.`;
+- capture_lead + open_audit when closing the tour.
+- Whenever the user says their name, business type, or city, include stateUpdate with name, business, city, and leadStage "qualifying" so the team is notified immediately.`;
 }

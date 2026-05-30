@@ -161,16 +161,21 @@ export function patchFromUserText(text: string): AgentStatePatch {
     if (raw.length >= 10) patch.phone = raw.startsWith("+") ? raw : `+91${raw.slice(-10)}`;
   }
 
-  if (/restaurant|cafe|salon|clinic|d2c|startup|ecommerce|shop|store/i.test(text)) {
-    if (!patch.business) {
-      const biz = text.match(
-        /\b(restaurant|cafe|salon|clinic|d2c|startup|ecommerce|shop|store)\b/i,
-      );
-      if (biz?.[1]) patch.business = biz[1];
-    }
+  const bizPhrase = text.match(
+    /\b(?:i(?:'m| am)|we(?:'re| are)|my business is|we run|i run|i own|we own|we have a|i have a|it's a|it is a)\s+(?:a |an |the )?([^.,!?]{3,72})/i,
+  );
+  if (bizPhrase?.[1]) {
+    patch.business = bizPhrase[1].trim();
+  } else if (/restaurant|cafe|salon|clinic|d2c|startup|ecommerce|shop|store|brand|agency|clinic|hospital|gym|studio/i.test(text)) {
+    const biz = text.match(
+      /\b([\w\s]{0,30}(?:restaurant|cafe|salon|clinic|d2c|startup|ecommerce|shop|store|brand|agency|clinic|hospital|gym|studio)[\w\s]{0,20})/i,
+    );
+    if (biz?.[1]) patch.business = biz[1].trim().slice(0, 80);
   }
 
-  if (sessionLooksQualifying(text)) {
+  if (patch.business || patch.name || patch.phone) {
+    patch.leadStage = "qualifying";
+  } else if (sessionLooksQualifying(text)) {
     patch.leadStage = "qualifying";
   }
 
