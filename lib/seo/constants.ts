@@ -1,5 +1,7 @@
 const DEFAULT_SITE_URL = "https://brandcure.in";
 
+import { SOCIAL_PROFILE_URLS } from "@/lib/social-links";
+
 /** Canonical site URL — set NEXT_PUBLIC_SITE_URL in Vercel (with https://). */
 export function resolveSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -45,7 +47,7 @@ export const ORGANIZATION = {
     longitude: 80.2707,
   },
   areaServed: ["India", "IN", "Tamil Nadu", "Chennai"],
-  sameAs: [] as string[],
+  sameAs: SOCIAL_PROFILE_URLS,
 } as const;
 
 export const SERVICES_FOR_SCHEMA = [

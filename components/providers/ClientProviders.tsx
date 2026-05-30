@@ -5,6 +5,7 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
 import { PortfolioExperienceProvider } from "@/contexts/PortfolioExperienceContext";
+import { HashScroll } from "@/components/layout/HashScroll";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import type { ReactNode } from "react";
 
@@ -15,6 +16,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
         <AgentProvider>
           <ChatProvider>
             <AgentLeadSync />
+            <HashScroll />
             <CustomCursor />
             {children}
           </ChatProvider>

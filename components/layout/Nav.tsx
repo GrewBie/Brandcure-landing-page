@@ -3,18 +3,12 @@
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/cn";
 import { useScrollY } from "@/hooks/useScrollY";
+import { MAIN_NAV_LINKS, NAV_CTA_HREF } from "@/lib/nav-links";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 const NAV_HEIGHT = 76;
-
-const links = [
-  { href: "#services", label: "Services" },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "#blog", label: "Blog" },
-  { href: "#contact", label: "Contact" },
-];
 
 export function Nav() {
   const scrollY = useScrollY();
@@ -46,13 +40,13 @@ export function Nav() {
             className="flex h-full items-center gap-9"
             aria-label="Main navigation"
           >
-            {links.map((link) => (
+            {MAIN_NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="nav-link text-charcoal">
                 {link.label}
               </Link>
             ))}
           </nav>
-          <Link href="#contact" className="nav-cta shrink-0">
+          <Link href={NAV_CTA_HREF} className="nav-cta shrink-0">
             Free Audit →
           </Link>
         </div>
@@ -75,7 +69,7 @@ export function Nav() {
         >
           <div className="container-main py-6">
             <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
-              {links.map((link) => (
+              {MAIN_NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -86,7 +80,7 @@ export function Nav() {
                 </Link>
               ))}
               <Link
-                href="#contact"
+                href={NAV_CTA_HREF}
                 className="nav-cta mt-3 h-11 w-full justify-center"
                 onClick={() => setOpen(false)}
               >

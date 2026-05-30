@@ -1,6 +1,15 @@
 import { Logo } from "@/components/layout/Logo";
 import { siteSettings } from "@/lib/mock-data";
+import { SOCIAL_LINKS } from "@/lib/social-links";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
+
+const SOCIAL_ICONS = {
+  facebook: Facebook,
+  instagram: Instagram,
+  linkedin: Linkedin,
+  x: Twitter,
+} as const;
 
 const columns: {
   title: string;
@@ -55,15 +64,23 @@ export function Footer() {
                 AI-first growth partner for Indian SMBs, startups, and global
                 brands. Based in Chennai, Tamil Nadu.
               </p>
-              <div className="mt-6 flex gap-2.5">
-                {["Li", "Ig", "X", "Yt"].map((s) => (
-                  <div
-                    key={s}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] text-[10px] text-[rgba(255,255,255,0.33)] transition-all duration-[220ms] hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.5)] hover:text-white"
-                  >
-                    {s}
-                  </div>
-                ))}
+              <div className="mt-6 flex gap-2.5" role="list" aria-label="Social media">
+                {SOCIAL_LINKS.map(({ network, label, href }) => {
+                  const Icon = SOCIAL_ICONS[network];
+                  return (
+                    <a
+                      key={network}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      role="listitem"
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.45)] transition-all duration-[220ms] hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.5)] hover:text-white"
+                    >
+                      <Icon className="h-3.5 w-3.5" aria-hidden />
+                    </a>
+                  );
+                })}
               </div>
             </div>
             {columns.map((col) => (

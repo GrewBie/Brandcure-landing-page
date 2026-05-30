@@ -1,3 +1,4 @@
+import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -37,6 +38,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${dmSans.variable} h-full`}
     >
       <body className="flex min-h-full flex-col antialiased">
+        <SiteAnalytics />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <ClientProviders>
           <ScrollProgress />
