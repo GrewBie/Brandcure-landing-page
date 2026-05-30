@@ -1,0 +1,42 @@
+{
+  "name": "brandcure-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "studio": "sanity dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
+    "@hookform/resolvers": "^5.4.0",
+    "@portabletext/react": "^6.2.0",
+    "@sanity/client": "^7.22.1",
+    "@sanity/image-url": "^2.1.1",
+    "@supabase/supabase-js": "^2.106.2",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.17.0",
+    "next": "16.2.6",
+    "next-sanity": "^13.0.7",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.76.1",
+    "resend": "^6.12.4",
+    "sanity": "^5.28.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

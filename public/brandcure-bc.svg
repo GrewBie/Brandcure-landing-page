@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="BrandCure">
+  <rect width="32" height="32" rx="7" fill="#2A2C30"/>
+  <!-- B — DM Sans style -->
+  <text
+    x="6.5"
+    y="21"
+    font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="12"
+    font-weight="600"
+    letter-spacing="0.04em"
+    fill="#FAFAF8"
+  >B</text>
+  <!-- C — Cormorant italic, gold accent -->
+  <text
+    x="17"
+    y="22"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="15"
+    font-style="italic"
+    font-weight="500"
+    fill="#C4A26A"
+  >C</text>
+</svg>

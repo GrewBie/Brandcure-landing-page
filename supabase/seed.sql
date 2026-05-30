@@ -1,0 +1,11 @@
+-- Optional dev seed — do NOT run in production
+-- insert into public.leads (name, email, phone, business, challenge, source, status)
+-- values (
+--   'Test User',
+--   'test@example.com',
+--   '+91 98765 43210',
+--   'Demo Bakery · Food & Beverage',
+--   'Need more online orders and WhatsApp automation.',
+--   'website',
+--   'new'
+-- );
