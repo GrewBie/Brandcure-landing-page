@@ -49,7 +49,7 @@ export default async function PortfolioIndexPage() {
         <PortfolioSections projects={projects} />
         <Link
           href="/#portfolio"
-          className="mt-12 inline-block text-sm font-medium text-charcoal hover:text-gold"
+          className="mt-12 inline-block text-sm font-medium text-foreground hover:text-gold"
         >
           ← Back to home
         </Link>

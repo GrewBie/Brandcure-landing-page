@@ -96,7 +96,7 @@ export function PortfolioSections({
       <RegisterNavCatalog projects={projects} />
 
       <div className="mt-6 rounded-[16px] border border-gold/40 bg-[rgba(196,162,106,0.08)] p-4">
-        <p className="text-[13px] text-charcoal">
+        <p className="text-[13px] text-foreground">
           <span className="font-semibold">Try voice —</span> open chat (bottom
           right), tap the gold <strong>Talk</strong> button, and say{" "}
           <em>“show me the AI ads”</em> or <em>“play the first video.”</em> You
@@ -114,7 +114,7 @@ export function PortfolioSections({
             key={section}
             type="button"
             onClick={() => browserNav.scrollToSection(section)}
-            className="whitespace-nowrap rounded-full border border-[var(--border-mid)] px-4 py-2 text-[11px] font-semibold tracking-[0.05em] text-charcoal transition-colors hover:bg-charcoal hover:text-white"
+            className="whitespace-nowrap rounded-full border border-[var(--border-mid)] px-4 py-2 text-[11px] font-semibold tracking-[0.05em] text-foreground transition-colors hover:bg-charcoal hover:text-white"
           >
             {SECTION_LABEL[section]} · {grouped[section].length}
           </button>
@@ -152,7 +152,7 @@ export function PortfolioSections({
                     onClick={() => setIndustry(opt)}
                     className={cn(
                       "filter-pill min-h-[40px] rounded-full border border-[var(--border-mid)] px-4 py-2 text-[11px] font-semibold tracking-[0.05em]",
-                      industry === opt ? "on" : "text-charcoal",
+                      industry === opt ? "on" : "text-foreground",
                     )}
                   >
                     {opt === "all" ? "All Industries" : opt}

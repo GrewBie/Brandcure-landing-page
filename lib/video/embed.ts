@@ -57,3 +57,17 @@ export function parseVideoUrl(rawUrl: string | null | undefined): ParsedVideo {
 export function getVideoProvider(url: string | null | undefined): VideoProvider {
   return parseVideoUrl(url).provider;
 }
+
+/** Iframe src with autoplay; prefers unmuted when the provider allows it. */
+export function videoEmbedAutoplaySrc(parsed: ParsedVideo): string | undefined {
+  if (!parsed.embedUrl) return undefined;
+  if (parsed.provider === "youtube") {
+    const join = parsed.embedUrl.includes("?") ? "&" : "?";
+    return `${parsed.embedUrl}${join}autoplay=1&mute=0&playsinline=1`;
+  }
+  if (parsed.provider === "vimeo") {
+    const join = parsed.embedUrl.includes("?") ? "&" : "?";
+    return `${parsed.embedUrl}${join}autoplay=1&muted=0`;
+  }
+  return parsed.embedUrl;
+}

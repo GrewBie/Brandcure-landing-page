@@ -111,7 +111,7 @@ function FilterRow<T extends string>({
             onClick={() => onSelect(f.id)}
             className={cn(
               "filter-pill min-h-[44px] rounded-full border border-[var(--border-mid)] px-4 py-2 text-[11px] font-semibold tracking-[0.05em]",
-              active === f.id ? "on" : "text-charcoal",
+              active === f.id ? "on" : "text-foreground",
             )}
           >
             {f.label}

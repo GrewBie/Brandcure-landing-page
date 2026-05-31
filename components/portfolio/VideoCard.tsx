@@ -161,7 +161,7 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
         <p data-nav-summary className="mt-1 text-xs text-gray">
           {project.subtitle}
         </p>
-        <p className="mt-3 font-serif text-lg text-charcoal">
+        <p className="mt-3 font-serif text-lg text-foreground">
           {project.resultHeadline}
         </p>
         {(project.serviceType === "ai-ads" &&
@@ -177,7 +177,7 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
           ].map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-[rgba(42,44,48,0.07)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-charcoal"
+              className="rounded-full bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-foreground"
             >
               {tag}
             </span>
@@ -186,7 +186,7 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
         <Link
           href={`/portfolio/${project.slug}`}
           className={cn(
-            "mt-4 inline-flex items-center text-[12px] font-semibold text-charcoal hover:text-gold",
+            "mt-4 inline-flex items-center text-[12px] font-semibold text-foreground hover:text-gold",
           )}
         >
           View full case study →

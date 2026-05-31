@@ -35,7 +35,8 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className={`${cormorant.variable} ${dmSans.variable} h-full`}
+      className={`${cormorant.variable} ${dmSans.variable} h-full transition-colors duration-700 ease-in-out`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col antialiased">
         <SiteAnalytics />

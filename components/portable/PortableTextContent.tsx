@@ -25,7 +25,7 @@ const components: PortableTextComponents = {
       <p className="mb-5 text-base font-light leading-[1.8] text-gray">{children}</p>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="my-8 border-l-2 border-gold pl-6 font-serif text-xl italic text-charcoal">
+      <blockquote className="my-8 border-l-2 border-gold pl-6 font-serif text-xl italic text-foreground">
         {children}
       </blockquote>
     ),
@@ -44,13 +44,13 @@ const components: PortableTextComponents = {
   },
   marks: {
     strong: ({ children }) => (
-      <strong className="font-semibold text-charcoal">{children}</strong>
+      <strong className="font-semibold text-foreground">{children}</strong>
     ),
     em: ({ children }) => <em>{children}</em>,
     link: ({ children, value }) => (
       <a
         href={value?.href}
-        className="text-charcoal underline underline-offset-4 hover:text-gold"
+        className="text-foreground underline underline-offset-4 hover:text-gold"
         target={value?.href?.startsWith("/") ? undefined : "_blank"}
         rel={value?.href?.startsWith("/") ? undefined : "noopener noreferrer"}
       >

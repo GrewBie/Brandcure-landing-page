@@ -99,11 +99,11 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mt-10 flex flex-wrap gap-6 text-sm">
           <Link
             href="/blog"
-            className="font-medium text-charcoal hover:text-gold"
+            className="font-medium text-foreground hover:text-gold"
           >
             ← All articles
           </Link>
-          <Link href="/#blog" className="font-medium text-charcoal hover:text-gold">
+          <Link href="/#blog" className="font-medium text-foreground hover:text-gold">
             Back to home
           </Link>
         </div>

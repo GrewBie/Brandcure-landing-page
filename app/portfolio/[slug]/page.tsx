@@ -59,14 +59,14 @@ export default async function PortfolioProjectPage({ params }: Props) {
         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-gold">
           {project.segmentLabel}
         </p>
-        <p className="mt-2 text-[11px] font-semibold tracking-[0.08em] text-charcoal">
+        <p className="mt-2 text-[11px] font-semibold tracking-[0.08em] text-foreground">
           {project.automationSubtypeLabel ?? project.serviceTypeLabel}
         </p>
         <h1 className="mt-4 max-w-2xl font-serif text-5xl font-medium tracking-[-0.025em] text-brand-black">
           {project.title}
         </h1>
         <p className="mt-2 text-sm text-gray">{project.subtitle}</p>
-        <p className="mt-6 font-serif text-3xl text-charcoal">
+        <p className="mt-6 font-serif text-3xl text-foreground">
           {project.resultHeadline}
         </p>
         <p className="mt-3 max-w-xl text-gray">
@@ -81,7 +81,7 @@ export default async function PortfolioProjectPage({ params }: Props) {
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-[rgba(42,44,48,0.07)] px-3 py-1 text-[10px] font-semibold tracking-[0.04em] text-charcoal"
+                className="rounded-full bg-[var(--surface-muted)] px-3 py-1 text-[10px] font-semibold tracking-[0.04em] text-foreground"
               >
                 {tag}
               </span>
@@ -129,13 +129,13 @@ export default async function PortfolioProjectPage({ params }: Props) {
         <div className="mt-10 flex flex-wrap gap-6 text-sm">
           <Link
             href="/portfolio"
-            className="font-medium text-charcoal hover:text-gold"
+            className="font-medium text-foreground hover:text-gold"
           >
             ← All projects
           </Link>
           <Link
             href="/#portfolio"
-            className="font-medium text-charcoal hover:text-gold"
+            className="font-medium text-foreground hover:text-gold"
           >
             Back to home
           </Link>

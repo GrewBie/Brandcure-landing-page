@@ -120,7 +120,7 @@ export function Hero() {
         {Array.from({ length: 9 }, (_, i) => (
           <div
             key={i}
-            className="absolute h-[3px] w-[3px] rounded-full bg-[rgba(42,44,48,0.07)]"
+            className="absolute h-[3px] w-[3px] rounded-full bg-[var(--surface-muted)]"
             style={{
               left: `${61 + (i % 3) * 2.8}%`,
               top: `${70 + Math.floor(i / 3) * 2.8}%`,
@@ -145,7 +145,7 @@ export function Hero() {
             willChange: "transform, opacity",
           }}
         >
-          <div className="mb-9 inline-flex items-center gap-2 rounded-full bg-[rgba(42,44,48,0.06)] px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.1em] text-gray">
+          <div className="mb-9 inline-flex items-center gap-2 rounded-full bg-[var(--surface-muted-hover)] px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.1em] text-gray">
             <span className="h-1.5 w-1.5 rounded-full bg-success animate-green-pulse" />
             AI-FIRST GROWTH PARTNER · CHENNAI, INDIA
           </div>

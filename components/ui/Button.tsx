@@ -18,7 +18,7 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-charcoal text-white hover:-translate-y-0.5 hover:bg-brand-black hover:shadow-[0_12px_32px_rgba(0,0,0,0.22)]",
   secondary:
-    "border-[1.5px] border-[var(--border-mid)] bg-transparent text-charcoal hover:-translate-y-0.5 hover:bg-[rgba(42,44,48,0.06)]",
+    "border-[1.5px] border-[var(--border-mid)] bg-transparent text-foreground hover:-translate-y-0.5 hover:bg-[var(--surface-muted-hover)]",
 };
 
 export function Button({

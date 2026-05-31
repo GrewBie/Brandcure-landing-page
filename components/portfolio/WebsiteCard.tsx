@@ -35,7 +35,7 @@ export function WebsiteCard({ project, section, index }: Props) {
             href={project.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute right-3 top-3 rounded-full bg-warm-white/95 px-3 py-1.5 text-[10px] font-bold tracking-[0.06em] text-charcoal shadow-[0_4px_16px_rgba(0,0,0,0.18)] transition-colors hover:bg-gold hover:text-white"
+            className="absolute right-3 top-3 rounded-full bg-warm-white/95 px-3 py-1.5 text-[10px] font-bold tracking-[0.06em] text-foreground shadow-[0_4px_16px_rgba(0,0,0,0.18)] transition-colors hover:bg-gold hover:text-white"
           >
             VISIT SITE ↗
           </a>
@@ -52,14 +52,14 @@ export function WebsiteCard({ project, section, index }: Props) {
         <p data-nav-summary className="mt-1 text-xs text-gray">
           {project.subtitle}
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-charcoal">
+        <p className="mt-3 text-sm leading-relaxed text-foreground">
           {project.websiteDetails || project.resultDetail}
         </p>
         <div className="mt-auto flex flex-wrap gap-1.5 pt-4">
           {[project.serviceTypeLabel, ...project.tags].map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-[rgba(42,44,48,0.07)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-charcoal"
+              className="rounded-full bg-[var(--surface-muted)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-foreground"
             >
               {tag}
             </span>
@@ -67,7 +67,7 @@ export function WebsiteCard({ project, section, index }: Props) {
         </div>
         <Link
           href={`/portfolio/${project.slug}`}
-          className="mt-4 inline-flex items-center text-[12px] font-semibold text-charcoal hover:text-gold"
+          className="mt-4 inline-flex items-center text-[12px] font-semibold text-foreground hover:text-gold"
         >
           View details →
         </Link>

@@ -1,4 +1,5 @@
 import { Heart, MessageCircle } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 export function EngagementCounts({
   likeCount,
@@ -13,7 +14,10 @@ export function EngagementCounts({
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-3 text-[11px] font-medium tracking-[0.04em] text-gray ${className}`}
+      className={cn(
+        "flex flex-wrap items-center gap-3 text-[11px] font-medium tracking-[0.04em] text-gray",
+        className
+      )}
     >
       {likeCount > 0 && (
         <span className="inline-flex items-center gap-1">

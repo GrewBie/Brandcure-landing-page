@@ -43,7 +43,7 @@ export default async function BlogIndexPage() {
         <BlogListing posts={posts} />
         <Link
           href="/#blog"
-          className="mt-12 inline-block text-sm font-medium text-charcoal hover:text-gold"
+          className="mt-12 inline-block text-sm font-medium text-foreground hover:text-gold"
         >
           ← Back to home
         </Link>

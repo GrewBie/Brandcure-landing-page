@@ -28,7 +28,7 @@ export function Faq() {
           {BRANDCURE_FAQ.map((item, i) => (
             <Reveal key={item.question} delay={i * 0.04}>
               <details className="group rounded-xl border border-[var(--border)] bg-cream/40 open:bg-cream">
-                <summary className="cursor-pointer list-none px-5 py-4 font-medium text-charcoal marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="cursor-pointer list-none px-5 py-4 font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
                   <span className="flex items-start justify-between gap-4">
                     {item.question}
                     <span

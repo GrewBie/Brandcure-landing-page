@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
@@ -13,19 +14,21 @@ import type { ReactNode } from "react";
 
 export function ClientProviders({ children }: { children: ReactNode }) {
   return (
-    <NavCatalogProvider>
-      <PortfolioExperienceProvider>
-        <PortfolioNavBridge />
-        <PortfolioPendingNav />
-        <PortfolioDetailFocus />
-        <AgentProvider>
-          <ChatProvider>
-            <HashScroll />
-            <CustomCursor />
-            {children}
-          </ChatProvider>
-        </AgentProvider>
-      </PortfolioExperienceProvider>
-    </NavCatalogProvider>
+    <ThemeProvider>
+      <NavCatalogProvider>
+        <PortfolioExperienceProvider>
+          <PortfolioNavBridge />
+          <PortfolioPendingNav />
+          <PortfolioDetailFocus />
+          <AgentProvider>
+            <ChatProvider>
+              <HashScroll />
+              <CustomCursor />
+              {children}
+            </ChatProvider>
+          </AgentProvider>
+        </PortfolioExperienceProvider>
+      </NavCatalogProvider>
+    </ThemeProvider>
   );
 }

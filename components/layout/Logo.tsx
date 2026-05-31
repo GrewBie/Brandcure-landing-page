@@ -2,13 +2,14 @@ import { cn } from "@/lib/cn";
 
 export function Logo({
   className,
+  /** Force light-on-dark fills (footer). */
   dark = false,
 }: {
   className?: string;
   dark?: boolean;
 }) {
-  const brandFill = dark ? "rgba(255,255,255,0.85)" : "var(--charcoal)";
-  const cFill = dark ? "white" : "var(--black)";
+  const brandFill = dark ? "rgba(255,255,255,0.85)" : "var(--foreground)";
+  const cFill = dark ? "#ffffff" : "var(--foreground-heading)";
 
   return (
     <svg

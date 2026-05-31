@@ -1,6 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/layout/Logo";
+import { CinematicThemeSwitcher } from "@/components/ui/cinematic-theme-switcher";
 import { cn } from "@/lib/cn";
 import { useScrollY } from "@/hooks/useScrollY";
 import { MAIN_NAV_LINKS, NAV_CTA_HREF } from "@/lib/nav-links";
@@ -20,7 +21,7 @@ export function Nav() {
       className={cn(
         "fixed inset-x-0 top-0 z-[100] transition-all duration-[350ms] ease-out",
         scrolled
-          ? "border-b border-[var(--border)] bg-[rgba(240,237,230,0.93)] backdrop-blur-[20px]"
+          ? "border-b border-[var(--border)] bg-[var(--nav-bg-scrolled)] backdrop-blur-[20px]"
           : "bg-transparent",
       )}
       style={{ height: NAV_HEIGHT }}
@@ -41,30 +42,34 @@ export function Nav() {
             aria-label="Main navigation"
           >
             {MAIN_NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="nav-link text-charcoal">
+              <Link key={link.href} href={link.href} className="nav-link text-foreground">
                 {link.label}
               </Link>
             ))}
           </nav>
+          <CinematicThemeSwitcher compact className="shrink-0" />
           <Link href={NAV_CTA_HREF} className="nav-cta shrink-0">
             Free Audit →
           </Link>
         </div>
 
+        <div className="flex items-center gap-2 md:hidden">
+          <CinematicThemeSwitcher compact className="shrink-0" />
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-charcoal md:hidden"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground"
           onClick={() => setOpen(!open)}
           aria-expanded={open}
           aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
         </button>
+        </div>
       </div>
 
       {open && (
         <div
-          className="absolute inset-x-0 border-t border-[var(--border)] bg-[rgba(240,237,230,0.98)] backdrop-blur-xl md:hidden"
+          className="absolute inset-x-0 border-t border-[var(--border)] bg-[var(--nav-bg-mobile)] backdrop-blur-xl md:hidden"
           style={{ top: NAV_HEIGHT }}
         >
           <div className="container-main py-6">
@@ -73,7 +78,7 @@ export function Nav() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex h-12 items-center text-[15px] font-medium text-charcoal"
+                  className="flex h-12 items-center text-[15px] font-medium text-foreground"
                   onClick={() => setOpen(false)}
                 >
                   {link.label}

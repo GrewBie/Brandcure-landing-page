@@ -140,8 +140,8 @@ export function EngagementPanel({
           className={cn(
             "inline-flex min-h-[44px] items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors",
             liked
-              ? "border-gold bg-gold/10 text-charcoal"
-              : "border-[var(--border-mid)] text-charcoal hover:border-gold",
+              ? "border-gold bg-gold/10 text-foreground"
+              : "border-[var(--border-mid)] text-foreground hover:border-gold",
           )}
           aria-pressed={liked}
         >
@@ -187,7 +187,7 @@ export function EngagementPanel({
               <p className="text-[11px] font-bold tracking-[0.08em] text-gold">
                 {c.authorName}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal">
+              <p className="mt-2 text-sm leading-relaxed text-foreground">
                 {c.body}
               </p>
               <time

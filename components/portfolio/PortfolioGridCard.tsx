@@ -1,14 +1,21 @@
 "use client";
 
 import { CardSubtitleOverlay } from "@/components/portfolio/CardSubtitleOverlay";
-import { EngagementCounts } from "@/components/engagement/EngagementCounts";
 import { isNewContent } from "@/lib/engagement/rank";
 import { cn } from "@/lib/cn";
+import {
+  getProjectCardThumbnail,
+  getProjectPreviewVideoUrl,
+} from "@/lib/portfolio/preview-media";
 import { serviceTypeToSection } from "@/lib/portfolio-nav";
+import {
+  parseVideoUrl,
+  videoEmbedAutoplaySrc,
+} from "@/lib/video/embed";
 import type { PortfolioProject } from "@/types/content";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function PortfolioGridCard({
   project,
@@ -21,9 +28,16 @@ export function PortfolioGridCard({
   globalIndex?: number;
 }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [hover, setHover] = useState(false);
   const isNew = isNewContent(project.createdAt);
   const navSection = serviceTypeToSection(project.serviceType);
+
+  const videoUrl = getProjectPreviewVideoUrl(project);
+  const parsed = parseVideoUrl(videoUrl);
+  const hasVideo = parsed.provider !== "none";
+  const thumbnailUrl = getProjectCardThumbnail(project);
+  const embedAutoplay = videoEmbedAutoplaySrc(parsed);
 
   const cardTags = [
     project.automationSubtypeLabel ?? project.serviceTypeLabel,
@@ -31,19 +45,37 @@ export function PortfolioGridCard({
     ...project.tags,
   ];
 
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || parsed.provider !== "file") return;
+    if (hover) {
+      v.muted = false;
+      v.currentTime = 0;
+      void v.play().catch(() => {
+        v.muted = true;
+        void v.play().catch(() => {});
+      });
+    } else {
+      v.pause();
+      v.currentTime = 0;
+      v.muted = false;
+    }
+  }, [hover, parsed.provider]);
+
   const onMove = (e: React.MouseEvent) => {
-    const img = cardRef.current?.querySelector("img");
+    if (!hover || hasVideo) return;
+    const img = cardRef.current?.querySelector("[data-card-thumb]");
     if (!cardRef.current || !img) return;
     const r = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - 0.5;
     const y = (e.clientY - r.top) / r.height - 0.5;
-    (img as HTMLImageElement).style.transform = `scale(1.1) translate(${x * 14}px, ${y * 10}px)`;
+    (img as HTMLElement).style.transform = `scale(1.08) translate(${x * 12}px, ${y * 8}px)`;
   };
 
   const onLeave = () => {
     setHover(false);
-    const img = cardRef.current?.querySelector("img");
-    if (img) (img as HTMLImageElement).style.transform = "scale(1)";
+    const img = cardRef.current?.querySelector("[data-card-thumb]");
+    if (img) (img as HTMLElement).style.transform = "scale(1)";
   };
 
   return (
@@ -59,59 +91,90 @@ export function PortfolioGridCard({
       data-nav-title={project.title}
       data-nav-result={project.resultHeadline}
       data-nav-industry={project.segmentLabel}
-      className="group block cursor-pointer overflow-hidden"
-      style={{ background: project.cardBg }}
+      className="group block cursor-pointer overflow-hidden border border-[var(--border)] bg-charcoal"
     >
       <article>
-        <div className="relative h-[210px] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden bg-[var(--brand-black)]">
           {isNew && (
             <span
               className={cn(
-                "absolute left-3 top-3 z-20 rounded-full bg-charcoal px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-cream transition-opacity duration-[320ms]",
-                "group-hover:opacity-0 group-[.nav-highlighted]:opacity-0",
+                "absolute left-3 top-3 z-20 rounded-full bg-[var(--brand-black)]/80 px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-[var(--brand-warm-white)] backdrop-blur-sm transition-opacity duration-300",
+                hover && "opacity-0",
               )}
             >
               NEW
             </span>
           )}
+
           <Image
-            src={project.heroImageUrl}
+            data-card-thumb
+            src={thumbnailUrl}
             alt=""
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={cn(
-              "object-cover transition-[transform,opacity] duration-[320ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform",
-              "group-hover:opacity-0 group-[.nav-highlighted]:opacity-0",
+              "object-cover transition-[transform,opacity] duration-300 ease-out will-change-transform",
+              hover && hasVideo && "opacity-0",
             )}
           />
+
+          {hasVideo && parsed.provider === "file" && (
+            <video
+              ref={videoRef}
+              src={parsed.url}
+              playsInline
+              loop
+              preload="metadata"
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+                hover ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0",
+              )}
+            />
+          )}
+
+          {hover &&
+            hasVideo &&
+            (parsed.provider === "youtube" || parsed.provider === "vimeo") &&
+            embedAutoplay && (
+              <iframe
+                key={embedAutoplay}
+                src={embedAutoplay}
+                title={project.title}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 z-10 h-full w-full border-0"
+              />
+            )}
+
           <CardSubtitleOverlay
             subtitle={project.subtitle}
-            className="pointer-events-none opacity-0 transition-opacity duration-[320ms] group-hover:opacity-100 group-[.nav-highlighted]:opacity-100"
+            className={cn(
+              "pointer-events-none transition-opacity duration-300",
+              hover ? "opacity-100" : "opacity-0",
+            )}
           />
         </div>
-        <div className="px-7 pb-7 pt-5">
+
+        <p data-nav-summary className="sr-only">
+          {project.subtitle}
+        </p>
+
+        <div
+          className={cn(
+            "overflow-hidden border-t border-[var(--on-dark-border)] px-5 transition-all duration-300 ease-out",
+            hover
+              ? "max-h-32 py-4 opacity-100"
+              : "max-h-0 border-transparent py-0 opacity-0",
+          )}
+        >
           <p className="mb-2 text-[10px] font-bold tracking-[0.1em] text-gold">
             {project.segmentLabel}
           </p>
-          <h3 className="font-serif text-[26px] font-medium tracking-[-0.01em] text-brand-black">
-            {project.title}
-          </h3>
-          <p
-            data-nav-summary
-            className="mt-1 text-xs tracking-[0.02em] text-gray"
-          >
-            {project.subtitle}
-          </p>
-          <EngagementCounts
-            likeCount={project.likeCount}
-            commentCount={project.commentCount}
-            className="mt-3 mb-3"
-          />
           <div className="flex flex-wrap gap-1.5">
             {cardTags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-[rgba(42,44,48,0.07)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-charcoal"
+                className="rounded-full bg-[var(--on-dark-border)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-[var(--on-dark-secondary)]"
               >
                 {tag}
               </span>

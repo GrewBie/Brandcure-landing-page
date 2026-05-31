@@ -46,7 +46,7 @@ export function CuratedPicksBar({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="m-0 truncate text-[12px] font-semibold text-charcoal">
+              <p className="m-0 truncate text-[12px] font-semibold text-foreground">
                 {item.title}
               </p>
               <p className="m-0 truncate text-[10px] text-gray">{item.result}</p>
@@ -60,7 +60,7 @@ export function CuratedPicksBar({
       <button
         type="button"
         onClick={onDismiss}
-        className="mt-2 w-full cursor-pointer rounded-[8px] border border-[var(--border-mid)] bg-transparent py-1.5 text-[11px] text-gray hover:text-charcoal"
+        className="mt-2 w-full cursor-pointer rounded-[8px] border border-[var(--border-mid)] bg-transparent py-1.5 text-[11px] text-gray hover:text-foreground"
       >
         Dismiss picks
       </button>

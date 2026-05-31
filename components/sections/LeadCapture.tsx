@@ -79,7 +79,7 @@ export function LeadCapture() {
               {auditChecklist.map((item) => (
                 <li key={item} className="flex items-center gap-3">
                   <span className="text-[15px] font-semibold text-gold">✓</span>
-                  <span className="text-[13px] text-charcoal">{item}</span>
+                  <span className="text-[13px] text-foreground">{item}</span>
                 </li>
               ))}
             </ul>
@@ -95,7 +95,7 @@ export function LeadCapture() {
               </p>
               <a
                 href={`https://wa.me/${siteSettings.whatsappNumber}`}
-                className="mt-3 inline-block text-xs font-medium text-charcoal underline-offset-4 hover:underline"
+                className="mt-3 inline-block text-xs font-medium text-foreground underline-offset-4 hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >

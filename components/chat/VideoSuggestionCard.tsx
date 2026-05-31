@@ -47,7 +47,7 @@ export function VideoSuggestionCard({
           <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-gold">
             Suggested · {item.industry}
           </p>
-          <p className="truncate text-[13px] font-semibold text-charcoal">
+          <p className="truncate text-[13px] font-semibold text-foreground">
             {item.title}
           </p>
           <p className="truncate text-[11px] text-gray">{item.result}</p>
@@ -64,7 +64,7 @@ export function VideoSuggestionCard({
         <button
           type="button"
           onClick={onDismiss}
-          className="cursor-pointer rounded-[8px] border border-[var(--border-mid)] bg-transparent px-3 py-2 text-[12px] font-medium text-charcoal hover:bg-[rgba(42,44,48,0.06)]"
+          className="cursor-pointer rounded-[8px] border border-[var(--border-mid)] bg-transparent px-3 py-2 text-[12px] font-medium text-foreground hover:bg-[var(--surface-muted-hover)]"
         >
           Dismiss
         </button>

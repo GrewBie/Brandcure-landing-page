@@ -459,7 +459,7 @@ export function ChatWidget() {
             setShowMobileTextChat(true);
             setBadge(false);
           }}
-          className="fixed bottom-24 right-4 z-[500] cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-2 text-[11px] font-semibold text-charcoal shadow-md md:hidden"
+          className="fixed bottom-24 right-4 z-[500] cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-2 text-[11px] font-semibold text-foreground shadow-md md:hidden"
         >
           Open chat
         </button>
@@ -492,7 +492,7 @@ export function ChatWidget() {
                 return next;
               });
             }}
-            className="cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-1 text-[10px] font-semibold text-charcoal shadow-sm"
+            className="cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-1 text-[10px] font-semibold text-foreground shadow-sm"
           >
             {showMobileTextChat ? "Hide text" : "Type instead"}
           </button>
@@ -574,7 +574,7 @@ export function ChatWidget() {
               role="status"
               aria-live="polite"
             >
-              <p className="m-0 text-center text-[11px] font-semibold leading-snug text-charcoal">
+              <p className="m-0 text-center text-[11px] font-semibold leading-snug text-foreground">
                 {voiceState === "listening"
                   ? "● On call — your turn to speak"
                   : voiceState === "speaking"
@@ -592,7 +592,7 @@ export function ChatWidget() {
           ) : (
             voiceSupported && (
               <details className="group border-b border-[var(--border)] bg-cream/80">
-                <summary className="cursor-pointer list-none px-4 py-2.5 text-[11px] font-semibold text-charcoal marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="cursor-pointer list-none px-4 py-2.5 text-[11px] font-semibold text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
                   <span className="inline-flex items-center gap-2">
                     <Mic className="h-3.5 w-3.5 text-gold" aria-hidden />
                     How voice works
@@ -624,7 +624,7 @@ export function ChatWidget() {
                     "max-w-[88%] whitespace-pre-wrap px-3.5 py-2.5 text-[13px] leading-[1.65]",
                     msg.role === "user"
                       ? "rounded-[14px_14px_3px_14px] bg-charcoal text-white"
-                      : "rounded-[14px_14px_14px_3px] bg-cream text-charcoal",
+                      : "rounded-[14px_14px_14px_3px] bg-cream text-foreground",
                   )}
                 >
                   {msg.content}
@@ -650,7 +650,7 @@ export function ChatWidget() {
                       "max-w-[88%] px-3.5 py-2.5 text-[13px] leading-[1.65] italic",
                       voiceState === "listening"
                         ? "rounded-[14px_14px_3px_14px] bg-charcoal/75 text-white"
-                        : "rounded-[14px_14px_14px_3px] bg-gold/25 text-charcoal",
+                        : "rounded-[14px_14px_14px_3px] bg-gold/25 text-foreground",
                     )}
                   >
                     {liveVoiceLine}
@@ -706,7 +706,7 @@ export function ChatWidget() {
           <div className="border-t border-[var(--border)] bg-cream/50 p-3">
             {!inCall && voiceSupported && (
               <p className="mb-2 text-center text-[10px] leading-snug text-gray">
-                <span className="font-semibold text-charcoal">Want to talk?</span>{" "}
+                <span className="font-semibold text-foreground">Want to talk?</span>{" "}
                 Tap <span className="font-semibold text-gold">Talk</span> — gold
                 mic starts a voice call. Type below anytime instead.
               </p>
@@ -754,7 +754,7 @@ export function ChatWidget() {
                     : "Type a message, or tap Talk to speak…"
                 }
                 disabled={typing}
-                className="min-h-[44px] flex-1 rounded-[10px] border border-[var(--border)] bg-warm-white px-3.5 text-[13px] text-charcoal focus:border-gold focus:outline-none"
+                className="min-h-[44px] flex-1 rounded-[10px] border border-[var(--border)] bg-warm-white px-3.5 text-[13px] text-foreground focus:border-gold focus:outline-none"
               />
               <button
                 type="submit"

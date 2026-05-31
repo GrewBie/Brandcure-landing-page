@@ -47,7 +47,7 @@ const columns: {
 
 export function Footer() {
   return (
-    <footer className="bg-brand-black text-[var(--on-dark-tertiary)]">
+    <footer className="bg-[var(--footer-bg)] text-[var(--on-dark-tertiary)]">
       <div className="section-padding pb-10 pt-[72px]">
         <div className="container-main">
           <div className="mb-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
