@@ -1,7 +1,4 @@
-import {
-  sendLeadConfirmationEmail,
-  sendLeadTeamNotification,
-} from "@/lib/resend";
+import { dispatchLeadEmails } from "@/lib/resend";
 import { createLeadsClient } from "@/lib/supabase/leads-client";
 import {
   agentLeadUpdateSchema,
@@ -209,12 +206,7 @@ export async function POST(request: Request) {
 
     const lead = toEmailLead(row, saved.id);
 
-    try {
-      if (hasRealEmail) await sendLeadConfirmationEmail(lead);
-      await sendLeadTeamNotification(lead);
-    } catch (emailError) {
-      console.error("[leads] Email failed:", emailError);
-    }
+    await dispatchLeadEmails(lead, { sendConfirmation: hasRealEmail });
 
     return NextResponse.json({ ok: true, id: saved.id });
   } catch (error) {
@@ -272,11 +264,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    try {
-      await sendLeadTeamNotification(toEmailLead(row, id));
-    } catch (emailError) {
-      console.error("[leads] Update email failed:", emailError);
-    }
+    await dispatchLeadEmails(toEmailLead(row, id), { sendConfirmation: false });
 
     return NextResponse.json({ ok: true, id });
   } catch (error) {

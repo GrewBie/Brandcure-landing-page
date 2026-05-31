@@ -6,6 +6,35 @@ function getResend() {
   return new Resend(requireServerEnv("RESEND_API_KEY"));
 }
 
+/** Resend accepts `Name <email@domain.com>` — plain addresses get a display name. */
+function getEmailFrom(): string {
+  const raw = requireServerEnv("EMAIL_FROM").trim();
+  if (/<[^>]+>/.test(raw)) return raw;
+  return `BrandCure <${raw}>`;
+}
+
+function parseEmailList(value: string | undefined): string[] {
+  if (!value?.trim()) return [];
+  return [...new Set(
+    value
+      .split(/[,;]/)
+      .map((e) => e.trim())
+      .filter(Boolean),
+  )];
+}
+
+function getTeamInboxes(): string[] {
+  const inboxes = parseEmailList(process.env.EMAIL_TO);
+  if (inboxes.length === 0) {
+    console.warn("[resend] EMAIL_TO is empty — team notifications skipped");
+  }
+  return inboxes;
+}
+
+function isSyntheticLeadEmail(email: string) {
+  return /@leads\.brandcure\.in$/i.test(email);
+}
+
 export type StoredLead = LeadFormValues & {
   source: string;
   id?: string;
@@ -13,7 +42,7 @@ export type StoredLead = LeadFormValues & {
 
 /** Sends confirmation to the email address submitted in the form. */
 export async function sendLeadConfirmationEmail(lead: StoredLead) {
-  const from = requireServerEnv("EMAIL_FROM");
+  const from = getEmailFrom();
   const resend = getResend();
 
   const { error } = await resend.emails.send({
@@ -30,28 +59,16 @@ export async function sendLeadConfirmationEmail(lead: StoredLead) {
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(`confirmation → ${lead.email}: ${error.message}`);
   }
 }
 
-function parseEmailList(value: string | undefined): string[] {
-  if (!value?.trim()) return [];
-  return value
-    .split(",")
-    .map((e) => e.trim())
-    .filter(Boolean);
-}
-
-function isSyntheticLeadEmail(email: string) {
-  return /@leads\.brandcure\.in$/i.test(email);
-}
-
-/** Optional copy to team inboxes (EMAIL_TO — comma-separated). */
+/** Copy to team inboxes listed in EMAIL_TO (comma- or semicolon-separated). */
 export async function sendLeadTeamNotification(lead: StoredLead) {
-  const teamInboxes = parseEmailList(process.env.EMAIL_TO);
+  const teamInboxes = getTeamInboxes();
   if (teamInboxes.length === 0) return;
 
-  const from = requireServerEnv("EMAIL_FROM");
+  const from = getEmailFrom();
   const resend = getResend();
   const replyTo = isSyntheticLeadEmail(lead.email) ? from : lead.email;
 
@@ -65,7 +82,39 @@ export async function sendLeadTeamNotification(lead: StoredLead) {
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(`team → ${teamInboxes.join(", ")}: ${error.message}`);
+  }
+}
+
+/** Confirmation + team inbox — each send is independent so one failure does not block the other. */
+export async function dispatchLeadEmails(
+  lead: StoredLead,
+  options: { sendConfirmation?: boolean } = {},
+) {
+  const sendConfirmation =
+    options.sendConfirmation ?? !isSyntheticLeadEmail(lead.email);
+
+  const jobs: { label: string; run: () => Promise<void> }[] = [];
+
+  if (sendConfirmation) {
+    jobs.push({
+      label: "confirmation",
+      run: () => sendLeadConfirmationEmail(lead),
+    });
+  }
+
+  jobs.push({
+    label: "team",
+    run: () => sendLeadTeamNotification(lead),
+  });
+
+  const results = await Promise.allSettled(jobs.map((j) => j.run()));
+
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    if (result.status === "rejected") {
+      console.error(`[resend] ${jobs[i].label} email failed:`, result.reason);
+    }
   }
 }
 
