@@ -1,6 +1,5 @@
 "use client";
 
-import { AgentLeadSync } from "@/components/agent/AgentLeadSync";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
@@ -21,7 +20,6 @@ export function ClientProviders({ children }: { children: ReactNode }) {
         <PortfolioDetailFocus />
         <AgentProvider>
           <ChatProvider>
-            <AgentLeadSync />
             <HashScroll />
             <CustomCursor />
             {children}

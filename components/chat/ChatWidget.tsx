@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatLeadForm } from "@/components/chat/ChatLeadForm";
 import { CuratedPicksBar } from "@/components/chat/CuratedPicksBar";
 import { VideoSuggestionCard } from "@/components/chat/VideoSuggestionCard";
 import { ConversationalOrb } from "@/components/voice/ConversationalOrb";
@@ -83,7 +82,6 @@ export function ChatWidget() {
   const [typing, setTyping] = useState(false);
   const [suggestion, setSuggestion] = useState<NavItem | null>(null);
   const [curatedPicks, setCuratedPicks] = useState<NavItem[]>([]);
-  const [showLeadForm, setShowLeadForm] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const seenSuggestions = useRef<string[]>([]);
@@ -93,7 +91,6 @@ export function ChatWidget() {
   const introRunningRef = useRef(false);
 
   const closeChatOverlays = useCallback(() => {
-    setShowLeadForm(false);
     setBadge(false);
     setOpen(false);
     setShowMobileTextChat(false);
@@ -127,7 +124,7 @@ export function ChatWidget() {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [agentMessages, typing, suggestion, showLeadForm, transcript, agentSpeech, voiceState]);
+  }, [agentMessages, typing, suggestion, transcript, agentSpeech, voiceState]);
 
   const findItem = useCallback((navId?: string): NavItem | null => {
     if (!navId) return null;
@@ -671,15 +668,6 @@ export function ChatWidget() {
               >
                 Open WhatsApp chat →
               </a>
-            )}
-
-            {showLeadForm && (
-              <ChatLeadForm
-                onDone={() => {
-                  patchSession({ leadStage: "captured" });
-                  setShowLeadForm(false);
-                }}
-              />
             )}
 
             {typing && (

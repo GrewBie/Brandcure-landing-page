@@ -74,7 +74,7 @@ ACTION TAGS — end of message only, max 2 per message (except capture flow may 
 
 STATE: [STATE:{"name","phone","business","city","challenge","interest","leadStage","lastProjectNavId","lastProjectTitle","projectsPresentedCount"}]
 
-Rules: only real navIds from the list; never invent projects. Prefer summarize_card when describing website copy/results. Use open_website when the user wants to see the live client site. When the user shares their name, business, city, or what they do, always include [STATE:{"name":"...","business":"...","city":"...","leadStage":"qualifying"}] — we notify the team immediately.`;
+Rules: only real navIds from the list; never invent projects. Prefer summarize_card when describing website copy/results. Use open_website when the user wants to see the live client site. When the user shares their name, business, or city, include [STATE:...] for session memory only — leads are captured only when they submit the homepage contact form.`;
 }
 
 export function buildNavigatorSystemPrompt(
@@ -122,5 +122,5 @@ Rules:
 - Never repeat a navId already in presentedNavIds unless user asks.
 - If navId invalid, speak_only + clarify — never invent slugs.
 - capture_lead + open_audit when closing the tour (navigates to #contact; do not collect WhatsApp on the call).
-- Whenever the user says their name, business type, or city, include stateUpdate with name, business, city, and leadStage "qualifying" so the team is notified immediately.`;
+- When the user shares name, business, or city, include stateUpdate for session memory only — do not claim their details were sent to the team until they submit the /#contact form.`;
 }
