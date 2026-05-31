@@ -1,5 +1,6 @@
 "use client";
 
+import { CardSubtitleOverlay } from "@/components/portfolio/CardSubtitleOverlay";
 import { EngagementCounts } from "@/components/engagement/EngagementCounts";
 import { isNewContent } from "@/lib/engagement/rank";
 import { cn } from "@/lib/cn";
@@ -64,28 +65,29 @@ export function PortfolioGridCard({
       <article>
         <div className="relative h-[210px] overflow-hidden">
           {isNew && (
-            <span className="absolute left-3 top-3 z-10 rounded-full bg-charcoal px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-cream">
+            <span
+              className={cn(
+                "absolute left-3 top-3 z-20 rounded-full bg-charcoal px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-cream transition-opacity duration-[320ms]",
+                "group-hover:opacity-0 group-[.nav-highlighted]:opacity-0",
+              )}
+            >
               NEW
             </span>
           )}
           <Image
             src={project.heroImageUrl}
-            alt={project.title}
+            alt=""
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-[450ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform"
-          />
-          <div
             className={cn(
-              "absolute inset-0 flex items-center justify-center bg-[rgba(17,18,20,0.72)] p-6 transition-opacity duration-[320ms]",
-              (hover ? "opacity-100" : "opacity-0"),
-              "group-[.nav-highlighted]:opacity-100",
+              "object-cover transition-[transform,opacity] duration-[320ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform",
+              "group-hover:opacity-0 group-[.nav-highlighted]:opacity-0",
             )}
-          >
-            <p className="m-0 max-w-[min(280px,90%)] text-center text-sm font-medium leading-relaxed text-white">
-              {project.subtitle}
-            </p>
-          </div>
+          />
+          <CardSubtitleOverlay
+            subtitle={project.subtitle}
+            className="pointer-events-none opacity-0 transition-opacity duration-[320ms] group-hover:opacity-100 group-[.nav-highlighted]:opacity-100"
+          />
         </div>
         <div className="px-7 pb-7 pt-5">
           <p className="mb-2 text-[10px] font-bold tracking-[0.1em] text-gold">
