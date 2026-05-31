@@ -8,19 +8,8 @@ type Props = {
 };
 
 export function PortfolioDetailExtras({ project }: Props) {
-  if (project.serviceType === "websites" && project.websiteUrl) {
-    return (
-      <div className="mt-8 flex flex-wrap gap-4">
-        <a
-          href={project.websiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center rounded-full bg-charcoal px-6 py-3 text-sm font-semibold text-white hover:bg-brand-black"
-        >
-          Visit live website ↗
-        </a>
-      </div>
-    );
+  if (project.serviceType === "websites") {
+    return null;
   }
 
   const videoUrl =

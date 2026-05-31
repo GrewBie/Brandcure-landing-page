@@ -1,7 +1,6 @@
 "use client";
 
 import { EngagementCounts } from "@/components/engagement/EngagementCounts";
-import { WebsiteLivePreview } from "@/components/portfolio/WebsiteLivePreview";
 import { isNewContent } from "@/lib/engagement/rank";
 import { serviceTypeToSection } from "@/lib/portfolio-nav";
 import type { PortfolioProject } from "@/types/content";
@@ -19,12 +18,10 @@ export function PortfolioGridCard({
   /** Stable index across homepage sections for voice next/prev. */
   globalIndex?: number;
 }) {
-  const cardRef = useRef<HTMLElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const [hover, setHover] = useState(false);
   const isNew = isNewContent(project.createdAt);
   const navSection = serviceTypeToSection(project.serviceType);
-  const isWebsite = project.serviceType === "websites";
-  const websiteUrl = project.websiteUrl?.trim();
 
   const cardTags = [
     project.automationSubtypeLabel ?? project.serviceTypeLabel,
@@ -47,80 +44,19 @@ export function PortfolioGridCard({
     if (img) (img as HTMLImageElement).style.transform = "scale(1)";
   };
 
-  const navProps = {
-    "data-nav-id": project.slug,
-    "data-nav-section": navSection,
-    "data-nav-index": globalIndex ?? index,
-    "data-nav-title": project.title,
-    "data-nav-result": project.resultHeadline,
-    "data-nav-industry": project.segmentLabel,
-  };
-
-  if (isWebsite && websiteUrl) {
-    return (
-      <article
-        ref={cardRef}
-        {...navProps}
-        className="overflow-hidden"
-        style={{ background: project.cardBg }}
-      >
-        <div className="relative">
-          {isNew && (
-            <span className="absolute left-3 top-3 z-10 rounded-full bg-charcoal px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-cream">
-              NEW
-            </span>
-          )}
-          <WebsiteLivePreview
-            url={websiteUrl}
-            title={project.title}
-            navId={project.slug}
-            aspectClass="h-[210px]"
-          />
-        </div>
-        <div className="px-7 pb-7 pt-5">
-          <p className="mb-2 text-[10px] font-bold tracking-[0.1em] text-gold">
-            {project.segmentLabel}
-          </p>
-          <h3 className="font-serif text-[26px] font-medium tracking-[-0.01em] text-brand-black">
-            {project.title}
-          </h3>
-          <p className="mt-1 text-xs tracking-[0.02em] text-gray">
-            {project.subtitle}
-          </p>
-          <EngagementCounts
-            likeCount={project.likeCount}
-            commentCount={project.commentCount}
-            className="mt-3 mb-3"
-          />
-          <div className="flex flex-wrap gap-1.5">
-            {cardTags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-[rgba(42,44,48,0.07)] px-2.5 py-1 text-[10px] font-semibold tracking-[0.04em] text-charcoal"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <Link
-            href={`/portfolio/${project.slug}`}
-            className="mt-4 inline-flex text-[11px] font-semibold text-charcoal hover:text-gold"
-          >
-            View details →
-          </Link>
-        </div>
-      </article>
-    );
-  }
-
   return (
     <Link
-      ref={cardRef as React.RefObject<HTMLAnchorElement>}
+      ref={cardRef}
       href={`/portfolio/${project.slug}`}
       onMouseMove={onMove}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={onLeave}
-      {...navProps}
+      data-nav-id={project.slug}
+      data-nav-section={navSection}
+      data-nav-index={globalIndex ?? index}
+      data-nav-title={project.title}
+      data-nav-result={project.resultHeadline}
+      data-nav-industry={project.segmentLabel}
       className="block cursor-pointer overflow-hidden"
       style={{ background: project.cardBg }}
     >
@@ -149,7 +85,7 @@ export function PortfolioGridCard({
               {project.resultDetail}
             </p>
             <span className="mt-2 rounded-full border border-gold px-4 py-1.5 text-[10px] font-bold tracking-[0.08em] text-gold">
-              VIEW CASE STUDY →
+              VIEW DETAILS →
             </span>
           </div>
         </div>

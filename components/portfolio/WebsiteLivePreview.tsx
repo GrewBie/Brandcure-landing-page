@@ -1,38 +1,25 @@
 "use client";
 
-import { browserNav } from "@/lib/browser-navigator";
 import { cn } from "@/lib/cn";
-import { useCallback, useEffect } from "react";
 
 type Props = {
   url: string;
   title: string;
-  navId?: string;
   className?: string;
   aspectClass?: string;
 };
 
+/** Full live-site iframe — used on the portfolio detail page only. */
 export function WebsiteLivePreview({
   url,
   title,
-  navId,
   className,
   aspectClass = "aspect-[16/10]",
 }: Props) {
-  const focusLive = useCallback(() => {}, []);
-
-  useEffect(() => {
-    if (!navId) return;
-    return browserNav.registerPlayer(navId, {
-      play: focusLive,
-      pause: () => {},
-    });
-  }, [navId, focusLive]);
-
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-white",
+        "relative overflow-hidden rounded-lg border border-[var(--border)] bg-white",
         aspectClass,
         className,
       )}
@@ -50,7 +37,7 @@ export function WebsiteLivePreview({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="pointer-events-auto rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold text-white shadow-sm hover:opacity-90"
+          className="pointer-events-auto rounded-full bg-gold px-3 py-1.5 text-[11px] font-bold text-white shadow-sm hover:opacity-90"
         >
           Open full site ↗
         </a>

@@ -1,5 +1,6 @@
 import { EngagementPanel } from "@/components/engagement/EngagementPanel";
 import { PortfolioDetailExtras } from "@/components/portfolio/PortfolioDetailExtras";
+import { WebsiteLivePreview } from "@/components/portfolio/WebsiteLivePreview";
 import { PortableTextContent } from "@/components/portable/PortableTextContent";
 import { getPortfolioBySlug, getPortfolioSlugs } from "@/lib/sanity/fetch";
 import Image from "next/image";
@@ -87,16 +88,26 @@ export default async function PortfolioProjectPage({ params }: Props) {
             ))}
           </div>
         )}
-        <div className="relative mt-12 aspect-[16/9] max-w-4xl overflow-hidden rounded-lg">
-          <Image
-            src={project.heroImageUrl}
-            alt={project.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1200px) 100vw, 900px"
-            priority
-          />
-        </div>
+        {project.serviceType === "websites" && project.websiteUrl ? (
+          <div className="mt-12 max-w-4xl">
+            <WebsiteLivePreview
+              url={project.websiteUrl}
+              title={project.title}
+              aspectClass="aspect-[16/10] min-h-[420px] w-full"
+            />
+          </div>
+        ) : (
+          <div className="relative mt-12 aspect-[16/9] max-w-4xl overflow-hidden rounded-lg">
+            <Image
+              src={project.heroImageUrl}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1200px) 100vw, 900px"
+              priority
+            />
+          </div>
+        )}
         <PortfolioDetailExtras project={project} />
         {project.serviceType === "automation" && (
           <PortableTextContent value={project.body} />

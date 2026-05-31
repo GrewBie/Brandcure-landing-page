@@ -1,8 +1,8 @@
 "use client";
 
-import { WebsiteLivePreview } from "@/components/portfolio/WebsiteLivePreview";
 import type { NavigatorSection } from "@/types/navigator";
 import type { PortfolioProject } from "@/types/content";
+import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
@@ -12,8 +12,6 @@ type Props = {
 };
 
 export function WebsiteCard({ project, section, index }: Props) {
-  const previewUrl = project.websiteUrl?.trim();
-
   return (
     <article
       data-nav-id={project.slug}
@@ -24,15 +22,25 @@ export function WebsiteCard({ project, section, index }: Props) {
       data-nav-industry={project.segmentLabel}
       className="group flex flex-col overflow-hidden rounded-[14px] border border-[var(--border)] bg-warm-white shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
     >
-      {previewUrl ? (
-        <WebsiteLivePreview
-          url={previewUrl}
-          title={project.title}
-          navId={project.slug}
+      <div className="relative aspect-[16/10] overflow-hidden bg-cream">
+        <Image
+          src={project.heroImageUrl}
+          alt={project.title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
-      ) : (
-        <div className="relative aspect-[16/10] bg-cream" />
-      )}
+        {project.websiteUrl && (
+          <a
+            href={project.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute right-3 top-3 rounded-full bg-warm-white/95 px-3 py-1.5 text-[10px] font-bold tracking-[0.06em] text-charcoal shadow-[0_4px_16px_rgba(0,0,0,0.18)] transition-colors hover:bg-gold hover:text-white"
+          >
+            VISIT SITE ↗
+          </a>
+        )}
+      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gold">
