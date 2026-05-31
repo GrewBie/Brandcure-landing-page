@@ -12,7 +12,10 @@ import {
 } from "@/lib/portfolio/maybe-curate-after-turn";
 import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
 import { focusPortfolioItem } from "@/lib/portfolio/run-nav-command";
-import { CONTACT_CLOSING_SPEECH } from "@/lib/contact-capture";
+import {
+  CONTACT_CLOSING_SPEECH,
+  runContactHandoffSequence,
+} from "@/lib/contact-capture";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { classifyAndCommand } from "@/lib/navigator-agent";
 import type {
@@ -373,13 +376,12 @@ export function useVoiceNavigator({
           break;
         case "capture_lead":
         case "open_audit":
-          onSteerToContact?.();
           break;
         default:
           break;
       }
     },
-    [focusNavItem, onSteerToContact],
+    [focusNavItem],
   );
 
   const processUtterance = useCallback(
@@ -489,18 +491,23 @@ export function useVoiceNavigator({
         syncNavPosition(sectionRef.current ?? undefined, indexRef.current);
       };
 
+      const speakHandoff = async () => {
+        try {
+          await speak(command.speech);
+        } catch (err) {
+          console.error("[voice] speak failed:", err);
+          await speakWithBrowserTts(command.speech);
+        }
+      };
+
       try {
-        await Promise.all([
-          (async () => {
-            try {
-              await speak(command.speech);
-            } catch (err) {
-              console.error("[voice] speak failed:", err);
-              await speakWithBrowserTts(command.speech);
-            }
-          })(),
-          runNav(),
-        ]);
+        if (contactHandoff) {
+          onSteerToContact?.();
+          await runContactHandoffSequence();
+          await speakHandoff();
+        } else {
+          await Promise.all([speakHandoff(), runNav()]);
+        }
       } finally {
         const curated = curatedTourRef.current;
         curatedTourRef.current = null;
@@ -526,6 +533,7 @@ export function useVoiceNavigator({
       syncNavPosition,
       pauseListening,
       resumeCallAfterTts,
+      onSteerToContact,
     ],
   );
 

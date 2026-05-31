@@ -1,6 +1,7 @@
 "use client";
 
 import { consumeContactFormFocus } from "@/lib/contact-capture";
+import { browserNav } from "@/lib/browser-navigator";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -24,16 +25,7 @@ export function HashScroll() {
 
       if (id === "contact" && consumeContactFormFocus()) {
         window.setTimeout(() => {
-          const contact = document.getElementById("contact");
-          const nameInput = contact?.querySelector<HTMLInputElement>(
-            "#name, input[name='name']",
-          );
-          nameInput?.focus({ preventScroll: true });
-          contact?.classList.add("contact-form-neha-focus");
-          window.setTimeout(
-            () => contact?.classList.remove("contact-form-neha-focus"),
-            4_000,
-          );
+          browserNav.highlightContactForm();
         }, 550);
       }
     };

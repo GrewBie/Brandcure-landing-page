@@ -467,7 +467,13 @@ body.nav-spotlight-active .nav-highlighted {
   border-radius: 14px;
 }
 
-#contact.contact-form-neha-focus form {
+body.nav-spotlight-active [data-contact-audit-form].nav-highlighted {
+  position: relative;
+  z-index: 482;
+  isolation: isolate;
+}
+
+#contact [data-contact-audit-form].contact-form-neha-focus {
   outline: 2px solid var(--gold);
   outline-offset: 6px;
   border-radius: 12px;

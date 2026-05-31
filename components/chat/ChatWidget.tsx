@@ -29,7 +29,11 @@ import {
 } from "@/lib/contact";
 import { patchFromUserText } from "@/lib/agent-state";
 import { sendChatMessage } from "@/lib/navigator-agent";
-import { navigateToContactForm } from "@/lib/contact-capture";
+import {
+  CONTACT_CLOSING_SPEECH,
+  runContactHandoffSequence,
+} from "@/lib/contact-capture";
+import { speakWithBrowserTts } from "@/lib/client/browser-tts";
 import { cn } from "@/lib/cn";
 import {
   micButtonLabel,
@@ -88,8 +92,7 @@ export function ChatWidget() {
   const lastIntroRef = useRef(introRequestId);
   const introRunningRef = useRef(false);
 
-  const steerToContactForm = useCallback(() => {
-    navigateToContactForm();
+  const closeChatOverlays = useCallback(() => {
     setShowLeadForm(false);
     setBadge(false);
     setOpen(false);
@@ -108,8 +111,15 @@ export function ChatWidget() {
     speakOutbound,
   } = useVoiceNavigator({
     catalog,
-    onSteerToContact: steerToContactForm,
+    onSteerToContact: closeChatOverlays,
   });
+
+  const steerToContactForm = useCallback(() => {
+    void runContactHandoffSequence(closeChatOverlays).then(async () => {
+      if (inCall) endCall();
+      else await speakWithBrowserTts(CONTACT_CLOSING_SPEECH);
+    });
+  }, [closeChatOverlays, inCall, endCall]);
 
   useEffect(() => {
     catalogRef.current = catalog;
@@ -200,7 +210,6 @@ export function ChatWidget() {
         case "capture_lead":
           patchSession({ leadStage: "ready" });
           steerToContactForm();
-          if (inCall) endCall();
           break;
         case "prefill_whatsapp": {
           setWhatsappLink(
@@ -318,6 +327,18 @@ export function ChatWidget() {
       }
 
       const merged = { ...baseSession, ...data.stateUpdate };
+      const contactHandoff = actions.some(
+        (a) => a.type === "capture_lead" || a.type === "open_audit",
+      );
+
+      if (contactHandoff) {
+        patchSession({ leadStage: "ready" });
+        recordTurn("assistant", CONTACT_CLOSING_SPEECH, "chat");
+        steerToContactForm();
+        setTyping(false);
+        return;
+      }
+
       if (shouldSteerToLeadCapture(merged)) {
         patchSession({ leadStage: "ready" });
       }
@@ -375,8 +396,10 @@ export function ChatWidget() {
         fallback.command === "capture_lead"
       ) {
         patchSession({ leadStage: "ready" });
+        recordTurn("assistant", CONTACT_CLOSING_SPEECH, "chat");
         steerToContactForm();
-        if (inCall) endCall();
+        setTyping(false);
+        return;
       }
       if (fallback.stateUpdate) patchSession(fallback.stateUpdate);
 

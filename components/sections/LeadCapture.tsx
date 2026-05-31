@@ -122,7 +122,10 @@ export function LeadCapture() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-xl border border-[var(--border)] bg-cream p-9 md:p-10">
+              <div
+                data-contact-audit-form
+                className="rounded-xl border border-[var(--border)] bg-cream p-9 md:p-10"
+              >
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[18px]" noValidate>
                   <Field id="name" label="YOUR NAME *" error={errors.name?.message}>
                     <input id="name" className={inputClass} autoComplete="name" {...register("name")} />

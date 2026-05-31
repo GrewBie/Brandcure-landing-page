@@ -193,6 +193,39 @@ class BrowserNavigator {
     return nodes.length > 0;
   }
 
+  private contactFormEl(): HTMLElement | null {
+    if (!this.isBrowser()) return null;
+    return document.querySelector<HTMLElement>(
+      "#contact [data-contact-audit-form]",
+    );
+  }
+
+  /** Spotlight the free-audit form on the homepage (#contact), not the chat widget. */
+  highlightContactForm(): boolean {
+    if (!this.isBrowser()) return false;
+    const formPanel = this.contactFormEl();
+    const section = document.getElementById("contact");
+    if (!formPanel || !section) return false;
+
+    if (this.currentHighlight) {
+      const prev = this.itemEl(this.currentHighlight);
+      prev?.classList.remove(HIGHLIGHT_CLASS);
+      this.currentHighlight = null;
+    }
+
+    const top =
+      section.getBoundingClientRect().top + window.scrollY - 76;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+
+    formPanel.classList.add(HIGHLIGHT_CLASS, "contact-form-neha-focus");
+    requestAnimationFrame(() => {
+      this.showSpotlight(formPanel);
+      requestAnimationFrame(() => this.positionSpotlight());
+    });
+    this.resetHighlightTimer();
+    return true;
+  }
+
   clearHighlight(): void {
     if (this.highlightTimer) {
       clearTimeout(this.highlightTimer);
@@ -210,6 +243,13 @@ class BrowserNavigator {
         .forEach((n) => n.classList.remove(SUMMARY_PULSE_CLASS));
     }
     this.currentHighlight = null;
+    if (this.isBrowser()) {
+      document
+        .querySelectorAll<HTMLElement>("[data-contact-audit-form]")
+        .forEach((el) => {
+          el.classList.remove(HIGHLIGHT_CLASS, "contact-form-neha-focus");
+        });
+    }
     this.hideSpotlight();
   }
 

@@ -141,7 +141,7 @@ export function inferCommandFromText(
       {
         command: "open_audit",
         speech:
-          "Lovely chatting with you! I've opened our contact form — please add your name, email, and a bit about your business. Our team will reply within 24 hours.",
+          "Lovely chatting with you! I've highlighted our free audit form on the page — please fill your name, email, and business there, not in chat. Our team will reply within 24 hours.",
       },
       catalog,
     );

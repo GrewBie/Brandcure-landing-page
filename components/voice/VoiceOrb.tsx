@@ -6,7 +6,6 @@ import { useChat } from "@/contexts/ChatContext";
 import { useNavCatalog } from "@/contexts/NavCatalogContext";
 import { usePortfolioExperience } from "@/contexts/PortfolioExperienceContext";
 import { useVoiceNavigator } from "@/hooks/useVoiceNavigator";
-import { navigateToContactForm } from "@/lib/contact-capture";
 import { NEHA_INTRO_SPEECH } from "@/lib/voice/neha-intro";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -22,8 +21,7 @@ export function VoiceOrb() {
   const onPortfolio = pathname?.startsWith("/portfolio") ?? false;
   const manualBrowse = onPortfolio && mode === "manual";
 
-  const steerToContactForm = useCallback(() => {
-    navigateToContactForm();
+  const closeVoiceOverlays = useCallback(() => {
     setPanelOpen(false);
     setOpen(false);
   }, [setOpen]);
@@ -41,7 +39,7 @@ export function VoiceOrb() {
     submitText,
   } = useVoiceNavigator({
     catalog,
-    onSteerToContact: steerToContactForm,
+    onSteerToContact: closeVoiceOverlays,
   });
 
   const lastRequestRef = useRef(voiceRequestId);
