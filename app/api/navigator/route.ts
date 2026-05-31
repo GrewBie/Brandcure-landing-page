@@ -1,8 +1,9 @@
 import { DEFAULT_MODEL, getAnthropicClient } from "@/lib/anthropic";
 import { buildNavigatorSystemPrompt } from "@/lib/agent-prompts";
+import { sanitizeNavigatorCommand } from "@/lib/agent-guardrails";
 import { createDefaultSession } from "@/lib/agent-state";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import type { AgentSessionState, AgentStatePatch } from "@/types/agent-state";
+import type { AgentMessage, AgentSessionState, AgentStatePatch } from "@/types/agent-state";
 import type {
   NavItem,
   NavigatorCommand,
@@ -25,6 +26,9 @@ const COMMAND_TYPES: NavigatorCommandType[] = [
   "dismiss_spotlight",
   "capture_lead",
   "open_audit",
+  "open_detail",
+  "open_website",
+  "summarize_card",
 ];
 
 const SECTIONS: NavigatorSection[] = ["creatives", "automations", "websites"];
@@ -116,7 +120,15 @@ export async function POST(request: Request) {
     const response = await client.messages.create({
       model: DEFAULT_MODEL,
       max_tokens: 650,
-      system: buildNavigatorSystemPrompt(catalog, session),
+      system: buildNavigatorSystemPrompt(
+        catalog,
+        session,
+        messages.map((m) => ({
+          ...m,
+          channel: "chat" as const,
+          at: new Date().toISOString(),
+        })) as AgentMessage[],
+      ),
       messages: messages.map((m) => ({
         role: m.role,
         content: m.content,
@@ -127,9 +139,11 @@ export async function POST(request: Request) {
       .map((block) => (block.type === "text" ? block.text : ""))
       .join("\n");
 
-    const command =
+    const parsed =
       parseCommand(text) ??
       safeFallback("I'm not sure how to help with that — could you rephrase?");
+
+    const command = sanitizeNavigatorCommand(parsed, catalog);
 
     return NextResponse.json(command);
   } catch (error) {

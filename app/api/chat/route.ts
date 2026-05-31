@@ -2,7 +2,7 @@ import { DEFAULT_MODEL, getAnthropicClient } from "@/lib/anthropic";
 import { buildChatSystemPrompt } from "@/lib/agent-prompts";
 import { createDefaultSession } from "@/lib/agent-state";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import type { AgentSessionState, AgentStatePatch } from "@/types/agent-state";
+import type { AgentMessage, AgentSessionState, AgentStatePatch } from "@/types/agent-state";
 import type { NavItem } from "@/types/navigator";
 import { NextResponse } from "next/server";
 
@@ -55,7 +55,15 @@ export async function POST(request: Request) {
     const response = await client.messages.create({
       model: DEFAULT_MODEL,
       max_tokens: 700,
-      system: buildChatSystemPrompt(catalog, session),
+      system: buildChatSystemPrompt(
+        catalog,
+        session,
+        messages.map((m) => ({
+          ...m,
+          channel: "chat" as const,
+          at: new Date().toISOString(),
+        })) as AgentMessage[],
+      ),
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
     });
 

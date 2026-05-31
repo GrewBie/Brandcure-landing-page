@@ -19,8 +19,7 @@ export function PortfolioWelcomeOverlay() {
     markPortfolioAgentTour();
     setMode("ai");
     setShowWelcome(false);
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
-    if (!mobile) setOpen(true);
+    setOpen(true);
     requestNehaIntro();
   };
 

@@ -116,6 +116,7 @@ export function buildNavCatalog(projects: PortfolioProject[]): NavItem[] {
       posterUrl: project.heroImageUrl,
       industry: project.segmentLabel,
       agentSummary: agentSummaryFor(project),
+      websiteUrl: project.websiteUrl,
       keywords: deriveKeywords(project),
     };
   });
@@ -129,7 +130,8 @@ export function catalogToPromptList(catalog: NavItem[]): string {
       const summary = item.agentSummary
         ? ` | ${item.agentSummary.slice(0, 120)}${item.agentSummary.length > 120 ? "…" : ""}`
         : "";
-      return `- navId="${item.navId}" | section=${item.navSection} | "${item.title}" (${item.industry}) — ${item.result}${item.videoUrl ? " [has video]" : ""}${summary}`;
+      const site = item.websiteUrl ? " [has live site]" : "";
+      return `- navId="${item.navId}" | section=${item.navSection} | "${item.title}" (${item.industry}) — ${item.result}${item.videoUrl ? " [has video]" : ""}${site}${summary}`;
     })
     .join("\n");
 }

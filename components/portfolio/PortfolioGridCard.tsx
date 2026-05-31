@@ -2,6 +2,7 @@
 
 import { EngagementCounts } from "@/components/engagement/EngagementCounts";
 import { isNewContent } from "@/lib/engagement/rank";
+import { cn } from "@/lib/cn";
 import { serviceTypeToSection } from "@/lib/portfolio-nav";
 import type { PortfolioProject } from "@/types/content";
 import Image from "next/image";
@@ -57,7 +58,7 @@ export function PortfolioGridCard({
       data-nav-title={project.title}
       data-nav-result={project.resultHeadline}
       data-nav-industry={project.segmentLabel}
-      className="block cursor-pointer overflow-hidden"
+      className="group block cursor-pointer overflow-hidden"
       style={{ background: project.cardBg }}
     >
       <article>
@@ -75,18 +76,15 @@ export function PortfolioGridCard({
             className="object-cover transition-transform duration-[450ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform"
           />
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 bg-[rgba(17,18,20,0.72)] p-6 transition-opacity duration-[320ms]"
-            style={{ opacity: hover ? 1 : 0 }}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center bg-[rgba(17,18,20,0.72)] p-6 transition-opacity duration-[320ms]",
+              (hover ? "opacity-100" : "opacity-0"),
+              "group-[.nav-highlighted]:opacity-100",
+            )}
           >
-            <div className="font-serif text-[46px] font-medium leading-none text-white">
-              {project.resultHeadline}
-            </div>
-            <p className="max-w-[220px] text-center text-xs leading-snug text-[rgba(255,255,255,0.7)]">
-              {project.resultDetail}
+            <p className="m-0 max-w-[min(280px,90%)] text-center text-sm font-medium leading-relaxed text-white">
+              {project.subtitle}
             </p>
-            <span className="mt-2 rounded-full border border-gold px-4 py-1.5 text-[10px] font-bold tracking-[0.08em] text-gold">
-              VIEW DETAILS →
-            </span>
           </div>
         </div>
         <div className="px-7 pb-7 pt-5">
@@ -96,7 +94,10 @@ export function PortfolioGridCard({
           <h3 className="font-serif text-[26px] font-medium tracking-[-0.01em] text-brand-black">
             {project.title}
           </h3>
-          <p className="mt-1 text-xs tracking-[0.02em] text-gray">
+          <p
+            data-nav-summary
+            className="mt-1 text-xs tracking-[0.02em] text-gray"
+          >
             {project.subtitle}
           </p>
           <EngagementCounts

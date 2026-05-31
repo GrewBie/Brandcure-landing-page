@@ -98,6 +98,53 @@ export function dismissPortfolioSpotlight(): void {
   browserNav.clearHighlight();
 }
 
+export function openPortfolioDetail(navId: string): void {
+  if (typeof window === "undefined") return;
+  const path = `/portfolio/${navId}`;
+  if (window.location.pathname === path) return;
+  window.location.assign(path);
+}
+
+export function openProjectWebsite(
+  catalog: NavItem[],
+  navId: string,
+): boolean {
+  const item = catalog.find((i) => i.navId === navId);
+  if (!item?.websiteUrl) return false;
+  window.open(item.websiteUrl, "_blank", "noopener,noreferrer");
+  return true;
+}
+
+/** Spotlight card and pulse the summary text for voice/chat tours. */
+export function summarizePortfolioItem(
+  catalog: NavItem[],
+  navId: string,
+): NavItem | undefined {
+  const item = catalog.find((i) => i.navId === navId);
+  if (!item) return undefined;
+
+  if (isOnPortfolioPage()) {
+    browserNav.scrollToSection(item.navSection);
+    window.setTimeout(() => {
+      browserNav.scrollToItem(navId);
+      browserNav.highlightItem(navId);
+      browserNav.emphasizeItemSummary(navId);
+    }, PORTFOLIO_FOCUS_DELAY_MS);
+    return item;
+  }
+
+  const onHomePreview = hasItemInDom(navId);
+  if (onHomePreview) {
+    runOnHomepagePreview(navId, item.navSection);
+    window.setTimeout(() => browserNav.emphasizeItemSummary(navId), 600);
+    return item;
+  }
+
+  setPendingNav({ type: "summarize_card", navId });
+  goToPortfolioPage("agent");
+  return item;
+}
+
 /** Run a stored action after client navigation to /portfolio (voice call stays alive). */
 export function applyPendingNavAction(
   catalog: NavItem[],
@@ -105,6 +152,18 @@ export function applyPendingNavAction(
 ): void {
   if (action.type === "scroll_to" && action.section) {
     browserNav.scrollToSection(action.section);
+    return;
+  }
+
+  if (action.type === "open_detail" && action.navId) {
+    openPortfolioDetail(action.navId);
+    return;
+  }
+
+  if (action.type === "summarize_card" && action.navId) {
+    window.setTimeout(() => {
+      summarizePortfolioItem(catalog, action.navId!);
+    }, 500);
     return;
   }
 

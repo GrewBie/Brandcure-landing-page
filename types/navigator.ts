@@ -24,6 +24,8 @@ export type NavItem = {
   industry: string;
   /** Type-specific detail for Neha (website copy, ROI, ad description). */
   agentSummary?: string;
+  /** Live client site URL (websites section). */
+  websiteUrl?: string;
   /** Lowercased keywords for matching (title, tags, segment, subtitle words). */
   keywords: string[];
 };
@@ -41,7 +43,10 @@ export type NavigatorCommandType =
   | "open_portfolio"
   | "dismiss_spotlight"
   | "capture_lead"
-  | "open_audit";
+  | "open_audit"
+  | "open_detail"
+  | "open_website"
+  | "summarize_card";
 
 export type NavigatorCommand = {
   command: NavigatorCommandType;

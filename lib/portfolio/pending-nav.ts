@@ -3,7 +3,7 @@ import type { NavigatorSection } from "@/types/navigator";
 const PENDING_NAV_KEY = "brandcure-pending-nav";
 
 export type PendingNavAction = {
-  type: "highlight" | "play_video" | "scroll_to";
+  type: "highlight" | "play_video" | "scroll_to" | "open_detail" | "summarize_card";
   navId?: string;
   section?: NavigatorSection;
 };

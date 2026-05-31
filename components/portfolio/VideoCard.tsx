@@ -158,7 +158,9 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
         <h3 className="mt-1.5 font-serif text-[22px] font-medium leading-tight text-brand-black">
           {project.title}
         </h3>
-        <p className="mt-1 text-xs text-gray">{project.subtitle}</p>
+        <p data-nav-summary className="mt-1 text-xs text-gray">
+          {project.subtitle}
+        </p>
         <p className="mt-3 font-serif text-lg text-charcoal">
           {project.resultHeadline}
         </p>

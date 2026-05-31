@@ -1,15 +1,17 @@
 "use client";
 
 import { useAgent } from "@/contexts/AgentContext";
+import { inferCommandFromText } from "@/lib/agent-nav-fallback";
 import { browserNav } from "@/lib/browser-navigator";
 import { patchFromUserText } from "@/lib/agent-state";
 import { playElevenLabsTts } from "@/lib/client/elevenlabs-audio";
+import { speakWithBrowserTts } from "@/lib/client/browser-tts";
+import { applyAgentNavCommand } from "@/lib/portfolio/apply-agent-command";
 import {
-  dismissPortfolioSpotlight,
-  focusPortfolioItem,
-  openPortfolioForTour,
-  scrollPortfolioSection,
-} from "@/lib/portfolio/run-nav-command";
+  planCuratedPortfolioTour,
+  runCuratedPortfolioTour,
+} from "@/lib/portfolio/maybe-curate-after-turn";
+import { focusPortfolioItem } from "@/lib/portfolio/run-nav-command";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { classifyAndCommand } from "@/lib/navigator-agent";
 import type {
@@ -75,6 +77,7 @@ export function useVoiceNavigator({
   const [elevenLabsReady, setElevenLabsReady] = useState(true);
   const inCallRef = useRef(false);
   const processingRef = useRef(false);
+  const curatedTourRef = useRef<NavItem[] | null>(null);
   const utteranceBufferRef = useRef("");
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -239,6 +242,14 @@ export function useVoiceNavigator({
         setElevenLabsReady(false);
       }
 
+      if (
+        (result === "failed" || result === "not_configured") &&
+        !linked.aborted
+      ) {
+        await speakWithBrowserTts(text);
+        return "played";
+      }
+
       if (ttsAbortRef.current === controller) {
         ttsAbortRef.current = null;
       }
@@ -298,29 +309,6 @@ export function useVoiceNavigator({
   const executeCommand = useCallback(
     (command: NavigatorCommand) => {
       switch (command.command) {
-        case "open_portfolio":
-          openPortfolioForTour();
-          break;
-        case "dismiss_spotlight":
-          dismissPortfolioSpotlight();
-          break;
-        case "scroll_to":
-          if (command.section) {
-            scrollPortfolioSection(command.section);
-            sectionRef.current = command.section;
-            indexRef.current = 0;
-          }
-          break;
-        case "highlight":
-          if (command.navId) {
-            focusNavItem(command.navId, false);
-          }
-          break;
-        case "play_video":
-          if (command.navId) {
-            focusNavItem(command.navId, true);
-          }
-          break;
         case "next_item": {
           const section =
             sectionRef.current ?? browserNav.getCurrentScrollSection();
@@ -368,6 +356,11 @@ export function useVoiceNavigator({
           onOpenAudit?.();
           break;
         default:
+          applyAgentNavCommand(catalogRef.current, command);
+          if (command.section) sectionRef.current = command.section;
+          if (command.navId) {
+            indexRef.current = browserNav.getItemIndex(command.navId);
+          }
           break;
       }
     },
@@ -390,7 +383,8 @@ export function useVoiceNavigator({
       setTranscript("");
       setVoiceState("thinking");
 
-      patchSession(patchFromUserText(trimmed));
+      const userPatch = patchFromUserText(trimmed);
+      patchSession(userPatch);
       recordTurn("user", trimmed, "voice");
 
       const userEntry = {
@@ -400,26 +394,67 @@ export function useVoiceNavigator({
         at: new Date().toISOString(),
       };
       const nextMessages = [...messagesRef.current, userEntry];
+      const baseSession = { ...sessionRef.current, ...userPatch };
 
-      const command = await classifyAndCommand(
-        nextMessages,
-        sessionRef.current,
-        catalogRef.current,
-      );
+      let command: NavigatorCommand;
+      try {
+        command = await classifyAndCommand(
+          nextMessages,
+          sessionRef.current,
+          catalogRef.current,
+        );
+      } catch {
+        command = inferCommandFromText(
+          trimmed,
+          catalogRef.current,
+          sessionRef.current,
+        );
+      }
 
       const catalogItem = command.navId
         ? catalogRef.current.find((i) => i.navId === command.navId)
         : undefined;
 
       if (command.stateUpdate) patchSession(command.stateUpdate);
+
+      const mergedSession = {
+        ...baseSession,
+        ...command.stateUpdate,
+      };
+
+      const plan = planCuratedPortfolioTour(
+        catalogRef.current,
+        mergedSession,
+        nextMessages,
+      );
+
+      const visualPortfolio = new Set([
+        "highlight",
+        "play_video",
+        "summarize_card",
+      ]);
+      const aiShowedCard =
+        Boolean(command.navId) && visualPortfolio.has(command.command);
+
+      curatedTourRef.current = null;
+      if (plan) {
+        patchSession(plan.sessionPatch);
+        if (!aiShowedCard) {
+          curatedTourRef.current = plan.picks;
+          if (
+            command.command === "speak_only" &&
+            !command.speech.toLowerCase().includes("show")
+          ) {
+            const names = plan.picks.map((p) => p.title).join(", ");
+            command.speech = `Based on what you shared, I'll walk you through ${plan.picks.length} projects that fit — ${names}.`;
+          }
+        }
+      }
+
       applyNavigatorCommand(command, catalogItem?.title);
       executeCommand(command);
       syncNavPosition(sectionRef.current ?? undefined, indexRef.current);
 
-      const mergedSession = {
-        ...sessionRef.current,
-        ...command.stateUpdate,
-      };
       if (
         shouldSteerToLeadCapture(mergedSession) &&
         command.command !== "capture_lead" &&
@@ -431,7 +466,15 @@ export function useVoiceNavigator({
       recordTurn("assistant", command.speech, "voice");
       try {
         await speak(command.speech);
+      } catch (err) {
+        console.error("[voice] speak failed:", err);
+        await speakWithBrowserTts(command.speech);
       } finally {
+        const curated = curatedTourRef.current;
+        curatedTourRef.current = null;
+        if (curated?.length) {
+          runCuratedPortfolioTour(catalogRef.current, curated);
+        }
         processingRef.current = false;
         listeningPausedRef.current = false;
         resumeCallAfterTts();

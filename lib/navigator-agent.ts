@@ -2,6 +2,8 @@ import type {
   AgentSessionState,
   AgentStatePatch,
 } from "@/types/agent-state";
+import { inferCommandFromText } from "@/lib/agent-nav-fallback";
+import { sanitizeNavigatorCommand } from "@/lib/agent-guardrails";
 import type {
   NavItem,
   NavigatorCommand,
@@ -15,16 +17,15 @@ function compactCatalog(catalog: NavItem[]): NavItem[] {
   return catalog.map((item) => ({ ...item, keywords: [] }));
 }
 
-const FALLBACK: NavigatorCommand = {
-  command: "speak_only",
-  speech: "I couldn't reach the navigator just now — please try again.",
-};
-
 export async function classifyAndCommand(
   messages: AgentMessage[] | NavigatorMessage[],
   session: AgentSessionState,
   catalog: NavItem[],
 ): Promise<NavigatorCommand> {
+  const lastUser = [...messages]
+    .reverse()
+    .find((m) => m.role === "user")?.content;
+
   try {
     const res = await fetch("/api/navigator", {
       method: "POST",
@@ -38,11 +39,19 @@ export async function classifyAndCommand(
 
     const data = (await res.json()) as Partial<NavigatorCommand>;
     if (!data || typeof data.command !== "string" || !data.speech) {
-      return FALLBACK;
+      if (lastUser) return inferCommandFromText(lastUser, catalog, session);
+      return sanitizeNavigatorCommand(
+        { command: "speak_only", speech: "Sorry — try again in a moment." },
+        catalog,
+      );
     }
-    return data as NavigatorCommand;
+    return sanitizeNavigatorCommand(data as NavigatorCommand, catalog);
   } catch {
-    return FALLBACK;
+    if (lastUser) return inferCommandFromText(lastUser, catalog, session);
+    return sanitizeNavigatorCommand(
+      { command: "speak_only", speech: "Connection issue — browse the portfolio or try again." },
+      catalog,
+    );
   }
 }
 

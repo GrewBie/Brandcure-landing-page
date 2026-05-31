@@ -6,7 +6,9 @@ type PlayHandlers = {
 };
 
 const HIGHLIGHT_CLASS = "nav-highlighted";
+const SUMMARY_PULSE_CLASS = "nav-summary-pulse";
 const HIGHLIGHT_MS = 18_000;
+const SUMMARY_PULSE_MS = 5_000;
 const SPOTLIGHT_PAD = 14;
 
 function buildSpotlightClipPath(rect: DOMRect, pad: number): string {
@@ -30,6 +32,7 @@ function buildSpotlightClipPath(rect: DOMRect, pad: number): string {
 class BrowserNavigator {
   private players = new Map<string, PlayHandlers>();
   private highlightTimer: ReturnType<typeof setTimeout> | null = null;
+  private summaryPulseTimer: ReturnType<typeof setTimeout> | null = null;
   private currentHighlight: string | null = null;
   private spotlightTarget: HTMLElement | null = null;
   private backdropEl: HTMLDivElement | null = null;
@@ -167,14 +170,44 @@ class BrowserNavigator {
     return true;
   }
 
+  emphasizeItemSummary(navId: string): boolean {
+    if (!this.isBrowser()) return false;
+    const el = this.itemEl(navId);
+    if (!el) return false;
+
+    const nodes = Array.from(
+      el.querySelectorAll<HTMLElement>("[data-nav-summary]"),
+    );
+
+    for (const node of nodes) {
+      node.classList.add(SUMMARY_PULSE_CLASS);
+    }
+
+    if (this.summaryPulseTimer) clearTimeout(this.summaryPulseTimer);
+    this.summaryPulseTimer = setTimeout(() => {
+      for (const node of nodes) {
+        node.classList.remove(SUMMARY_PULSE_CLASS);
+      }
+    }, SUMMARY_PULSE_MS);
+
+    return nodes.length > 0;
+  }
+
   clearHighlight(): void {
     if (this.highlightTimer) {
       clearTimeout(this.highlightTimer);
       this.highlightTimer = null;
     }
+    if (this.summaryPulseTimer) {
+      clearTimeout(this.summaryPulseTimer);
+      this.summaryPulseTimer = null;
+    }
     if (this.currentHighlight && this.isBrowser()) {
       const prev = this.itemEl(this.currentHighlight);
       prev?.classList.remove(HIGHLIGHT_CLASS);
+      prev
+        ?.querySelectorAll(`.${SUMMARY_PULSE_CLASS}`)
+        .forEach((n) => n.classList.remove(SUMMARY_PULSE_CLASS));
     }
     this.currentHighlight = null;
     this.hideSpotlight();

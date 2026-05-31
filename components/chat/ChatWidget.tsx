@@ -1,6 +1,7 @@
 "use client";
 
 import { ChatLeadForm } from "@/components/chat/ChatLeadForm";
+import { CuratedPicksBar } from "@/components/chat/CuratedPicksBar";
 import { VideoSuggestionCard } from "@/components/chat/VideoSuggestionCard";
 import { ConversationalOrb } from "@/components/voice/ConversationalOrb";
 import { useAgent } from "@/contexts/AgentContext";
@@ -12,12 +13,14 @@ import { useVoiceNavigator, type VoiceState } from "@/hooks/useVoiceNavigator";
 import { usePathname } from "next/navigation";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { parseAgentResponse, type ChatAction } from "@/lib/chat-actions";
+import { inferCommandFromText } from "@/lib/agent-nav-fallback";
+import { resolveNavId } from "@/lib/agent-guardrails";
+import { applyAgentNavCommand } from "@/lib/portfolio/apply-agent-command";
 import {
-  dismissPortfolioSpotlight,
-  focusPortfolioItem,
-  openPortfolioForTour,
-  scrollPortfolioSection,
-} from "@/lib/portfolio/run-nav-command";
+  planCuratedPortfolioTour,
+  runCuratedPortfolioTour,
+} from "@/lib/portfolio/maybe-curate-after-turn";
+import { openPortfolioForTour } from "@/lib/portfolio/run-nav-command";
 import {
   BRANDCURE_TEL_URI,
   BRANDCURE_WHATSAPP_DISPLAY,
@@ -74,6 +77,7 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [suggestion, setSuggestion] = useState<NavItem | null>(null);
+  const [curatedPicks, setCuratedPicks] = useState<NavItem[]>([]);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -138,27 +142,56 @@ export function ChatWidget() {
 
   const runAction = useCallback(
     (action: ChatAction, conversationText: string) => {
+      const navId = action.arg
+        ? resolveNavId(action.arg, catalogRef.current)
+        : undefined;
+
       switch (action.type) {
         case "open_portfolio":
           openPortfolioForTour();
           break;
-        case "dismiss_spotlight":
-          dismissPortfolioSpotlight();
-          break;
         case "scroll_to":
-          if (action.arg && SECTIONS.includes(action.arg as NavigatorSection)) {
-            scrollPortfolioSection(action.arg as NavigatorSection);
-          }
-          break;
         case "highlight":
-          if (action.arg) {
-            focusPortfolioItem(catalogRef.current, action.arg, false);
+        case "play_video":
+        case "summarize_card":
+        case "open_detail":
+        case "open_website":
+          if (navId) {
+            applyAgentNavCommand(catalogRef.current, {
+              command:
+                action.type === "scroll_to"
+                  ? "scroll_to"
+                  : action.type === "highlight"
+                    ? "highlight"
+                    : action.type === "play_video"
+                      ? "play_video"
+                      : action.type === "summarize_card"
+                        ? "summarize_card"
+                        : action.type === "open_detail"
+                          ? "open_detail"
+                          : "open_website",
+              navId,
+              section: catalogRef.current.find((i) => i.navId === navId)
+                ?.navSection,
+              speech: "",
+            });
+          } else if (
+            action.type === "scroll_to" &&
+            action.arg &&
+            SECTIONS.includes(action.arg as NavigatorSection)
+          ) {
+            applyAgentNavCommand(catalogRef.current, {
+              command: "scroll_to",
+              section: action.arg as NavigatorSection,
+              speech: "",
+            });
           }
           break;
-        case "play_video":
-          if (action.arg) {
-            focusPortfolioItem(catalogRef.current, action.arg, true);
-          }
+        case "dismiss_spotlight":
+          applyAgentNavCommand(catalogRef.current, {
+            command: "dismiss_spotlight",
+            speech: "",
+          });
           break;
         case "suggest_video": {
           const item =
@@ -207,10 +240,16 @@ export function ChatWidget() {
     recordTurn("assistant", NEHA_INTRO_SPEECH, "voice");
     patchSession({ leadStage: "exploring" });
     markNehaIntroPlayed();
-    void speakOutbound(NEHA_INTRO_SPEECH).then(() => {
-      startCall();
-      introRunningRef.current = false;
-    });
+    void speakOutbound(NEHA_INTRO_SPEECH)
+      .then(() => {
+        startCall();
+      })
+      .catch(() => {
+        startCall();
+      })
+      .finally(() => {
+        introRunningRef.current = false;
+      });
   }, [
     patchSession,
     recordTurn,
@@ -252,7 +291,8 @@ export function ChatWidget() {
     if (inCall) endCall();
 
     recordTurn("user", text, "chat");
-    patchSession(patchFromUserText(text));
+    const userPatch = patchFromUserText(text);
+    patchSession(userPatch);
     setInput("");
     setTyping(true);
 
@@ -265,11 +305,12 @@ export function ChatWidget() {
         at: new Date().toISOString(),
       },
     ];
+    const baseSession = { ...session, ...userPatch };
 
     try {
       const data = await sendChatMessage(
         nextMessages,
-        session,
+        baseSession,
         catalogRef.current,
       );
 
@@ -282,12 +323,42 @@ export function ChatWidget() {
         patchSession(data.stateUpdate);
       }
 
-      const merged = { ...session, ...data.stateUpdate };
+      const merged = { ...baseSession, ...data.stateUpdate };
       if (shouldSteerToLeadCapture(merged)) {
         patchSession({ leadStage: "ready" });
       }
 
       recordTurn("assistant", clean || "Got it!", "chat");
+
+      const fullMessages = [
+        ...nextMessages,
+        {
+          role: "assistant" as const,
+          content: clean || "Got it!",
+          channel: "chat" as const,
+          at: new Date().toISOString(),
+        },
+      ];
+
+      const plan = planCuratedPortfolioTour(
+        catalogRef.current,
+        merged,
+        fullMessages,
+      );
+
+      const aiShowedPortfolio = actions.some((a) =>
+        ["highlight", "play_video", "summarize_card"].includes(a.type),
+      );
+
+      if (plan) {
+        patchSession(plan.sessionPatch);
+        setCuratedPicks(plan.picks);
+        if (!aiShowedPortfolio) {
+          requestAnimationFrame(() => {
+            runCuratedPortfolioTour(catalogRef.current, plan.picks);
+          });
+        }
+      }
 
       const conversationText = [
         ...agentMessages.map((m) => m.content),
@@ -298,11 +369,36 @@ export function ChatWidget() {
         actions.forEach((a) => runAction(a, conversationText));
       });
     } catch {
-      recordTurn(
-        "assistant",
-        `Connection issue — WhatsApp us at ${BRANDCURE_WHATSAPP_DISPLAY} or request a free audit below.`,
-        "chat",
+      const fallback = inferCommandFromText(
+        text,
+        catalogRef.current,
+        baseSession,
       );
+      recordTurn("assistant", fallback.speech, "chat");
+      applyAgentNavCommand(catalogRef.current, fallback);
+      if (fallback.stateUpdate) patchSession(fallback.stateUpdate);
+
+      const fullMessages = [
+        ...nextMessages,
+        {
+          role: "assistant" as const,
+          content: fallback.speech,
+          channel: "chat" as const,
+          at: new Date().toISOString(),
+        },
+      ];
+      const plan = planCuratedPortfolioTour(
+        catalogRef.current,
+        { ...baseSession, ...fallback.stateUpdate },
+        fullMessages,
+      );
+      if (plan) {
+        patchSession(plan.sessionPatch);
+        setCuratedPicks(plan.picks);
+        requestAnimationFrame(() => {
+          runCuratedPortfolioTour(catalogRef.current, plan.picks);
+        });
+      }
     }
     setTyping(false);
   };
@@ -321,7 +417,7 @@ export function ChatWidget() {
   };
 
   const showFullChatPanel = portfolioMobileVoice
-    ? showMobileTextChat
+    ? open || showMobileTextChat
     : open;
 
   const liveVoiceLine =
@@ -333,9 +429,23 @@ export function ChatWidget() {
 
   return (
     <>
+      {portfolioMobileVoice && !showFullChatPanel && (
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(true);
+            setShowMobileTextChat(true);
+            setBadge(false);
+          }}
+          className="fixed bottom-24 right-4 z-[500] cursor-pointer rounded-full border border-[var(--border)] bg-warm-white/95 px-3 py-2 text-[11px] font-semibold text-charcoal shadow-md md:hidden"
+        >
+          Open chat
+        </button>
+      )}
+
       {portfolioMobileVoice && (
         <div
-          className="fixed bottom-5 left-4 z-[500] flex flex-col items-center gap-2 md:hidden"
+          className="fixed bottom-5 left-4 z-[502] flex flex-col items-center gap-2 md:hidden"
           aria-label="Neha voice assistant"
         >
           <p
@@ -356,7 +466,7 @@ export function ChatWidget() {
             onClick={() => {
               setShowMobileTextChat((v) => {
                 const next = !v;
-                if (!next) setOpen(false);
+                setOpen(next);
                 return next;
               });
             }}
@@ -367,11 +477,16 @@ export function ChatWidget() {
         </div>
       )}
 
-      <div className="fixed bottom-6 right-6 z-[500] md:bottom-8 md:right-8">
+      <div
+        className={cn(
+          "fixed bottom-6 right-6 z-[500] md:bottom-8 md:right-8",
+          portfolioMobileVoice && "pointer-events-none md:pointer-events-auto",
+        )}
+      >
       {showFullChatPanel && (
         <div
           className={cn(
-            "animate-slide-up mb-3 flex flex-col overflow-hidden rounded-[18px] border border-[var(--border)] bg-warm-white shadow-[0_32px_90px_rgba(0,0,0,0.22)]",
+            "animate-slide-up pointer-events-auto mb-3 flex flex-col overflow-hidden rounded-[18px] border border-[var(--border)] bg-warm-white shadow-[0_32px_90px_rgba(0,0,0,0.22)]",
             portfolioMobileVoice
               ? "fixed bottom-28 left-4 right-4 z-[501] max-h-[min(52vh,420px)] w-auto"
               : "h-[min(580px,calc(100vh-120px))] w-[min(392px,calc(100vw-48px))]",
@@ -558,6 +673,14 @@ export function ChatWidget() {
             <div ref={endRef} />
           </div>
 
+          {curatedPicks.length > 0 && (
+            <CuratedPicksBar
+              items={curatedPicks}
+              catalog={catalog}
+              onDismiss={() => setCuratedPicks([])}
+            />
+          )}
+
           {suggestion && (
             <div className="border-t border-[var(--border)] p-3">
               <VideoSuggestionCard
@@ -640,7 +763,7 @@ export function ChatWidget() {
       )}
 
       {!portfolioMobileVoice && (
-      <div className="relative ml-auto w-14">
+      <div className="pointer-events-auto relative ml-auto w-14">
         {badge && !open && (
           <span className="animate-pop-in absolute -top-1 -right-1 z-[1] flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-cream bg-gold text-[9px] font-bold text-white">
             1

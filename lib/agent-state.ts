@@ -60,7 +60,9 @@ export function sessionFromNavigatorCommand(
 
   if (
     command.navId &&
-    (command.command === "highlight" || command.command === "play_video")
+    (command.command === "highlight" ||
+      command.command === "play_video" ||
+      command.command === "summarize_card")
   ) {
     const presented = new Set(next.presentedNavIds ?? []);
     if (!presented.has(command.navId)) {

@@ -37,6 +37,8 @@ export type AgentSessionState = {
   projectsPresentedCount?: number;
   /** Slugs already presented (avoid repeating the same case study). */
   presentedNavIds?: string[];
+  /** Set after the 2–3 interest-based curated cards were auto-shown. */
+  curatedTourShown?: boolean;
   /** ISO timestamp of last interaction. */
   lastActiveAt: string;
 };

@@ -467,6 +467,14 @@ body.nav-spotlight-active .nav-highlighted {
   border-radius: 14px;
 }
 
+.nav-summary-pulse {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 8px;
+  background: rgba(196, 162, 106, 0.12);
+  transition: outline-color 0.25s ease, background 0.25s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-spotlight-backdrop,
   .nav-spotlight-ring {

@@ -10,7 +10,10 @@ export type ChatActionType =
   | "open_voice"
   | "open_audit"
   | "capture_lead"
-  | "prefill_whatsapp";
+  | "prefill_whatsapp"
+  | "open_detail"
+  | "open_website"
+  | "summarize_card";
 
 export type ChatAction = {
   type: ChatActionType;
@@ -28,6 +31,9 @@ const KNOWN: ChatActionType[] = [
   "open_audit",
   "capture_lead",
   "prefill_whatsapp",
+  "open_detail",
+  "open_website",
+  "summarize_card",
 ];
 
 const ACTION_RE = /\[ACTION:([^\]]+)\]/g;
