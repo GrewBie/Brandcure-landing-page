@@ -1,7 +1,9 @@
 "use client";
 
 import { useNavCatalog } from "@/contexts/NavCatalogContext";
-import { flushPendingNav } from "@/lib/portfolio/run-nav-command";
+import { applyPendingNavAction } from "@/lib/portfolio/run-nav-command";
+import { applyPendingHighlightThenDetail } from "@/lib/portfolio/voice-nav-sequence";
+import { consumePendingNav } from "@/lib/portfolio/pending-nav";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
@@ -19,8 +21,15 @@ export function PortfolioPendingNav() {
     if (catalog.length === 0 || ranRef.current) return;
 
     ranRef.current = true;
-    const timer = window.setTimeout(() => {
-      flushPendingNav(catalog);
+    const timer = window.setTimeout(async () => {
+      const pending = consumePendingNav();
+      if (pending?.type === "highlight_then_detail" && pending.navId) {
+        await applyPendingHighlightThenDetail(catalog, pending);
+        return;
+      }
+      if (pending) {
+        applyPendingNavAction(catalog, pending);
+      }
     }, 400);
 
     return () => window.clearTimeout(timer);

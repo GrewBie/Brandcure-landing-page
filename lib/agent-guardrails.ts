@@ -17,6 +17,7 @@ const ALLOWED_COMMANDS = new Set<NavigatorCommand["command"]>([
   "open_audit",
   "open_detail",
   "open_website",
+  "show_website",
   "summarize_card",
 ]);
 
@@ -91,6 +92,7 @@ export function sanitizeNavigatorCommand(
     "play_video",
     "open_detail",
     "open_website",
+    "show_website",
     "summarize_card",
   ]);
 
@@ -105,16 +107,26 @@ export function sanitizeNavigatorCommand(
     };
   }
 
-  if (command === "open_website" && navId) {
+  if (
+    (command === "open_website" || command === "show_website") &&
+    navId
+  ) {
     const item = catalog.find((i) => i.navId === navId);
+    if (item?.websiteUrl || item?.navSection === "websites") {
+      return {
+        command: "show_website",
+        navId,
+        section: item?.navSection,
+        speech,
+        stateUpdate: raw.stateUpdate,
+      };
+    }
     if (!item?.websiteUrl) {
       return {
         command: "open_detail",
         navId,
         section: item?.navSection,
-        speech: speech.includes("website")
-          ? speech
-          : `I'll open the ${item?.title ?? "project"} page — we can view the live site from there.`,
+        speech,
         stateUpdate: raw.stateUpdate,
       };
     }

@@ -5,6 +5,7 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
 import { PortfolioNavBridge } from "@/components/portfolio/PortfolioNavBridge";
+import { PortfolioDetailFocus } from "@/components/portfolio/PortfolioDetailFocus";
 import { PortfolioPendingNav } from "@/components/portfolio/PortfolioPendingNav";
 import { PortfolioExperienceProvider } from "@/contexts/PortfolioExperienceContext";
 import { HashScroll } from "@/components/layout/HashScroll";
@@ -17,6 +18,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
       <PortfolioExperienceProvider>
         <PortfolioNavBridge />
         <PortfolioPendingNav />
+        <PortfolioDetailFocus />
         <AgentProvider>
           <ChatProvider>
             <AgentLeadSync />

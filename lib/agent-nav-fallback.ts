@@ -69,22 +69,31 @@ export function inferCommandFromText(
     );
   }
 
-  if (/\b(live site|visit site|open website|their website)\b/.test(lower) && item) {
+  if (
+    item &&
+    (/\b(live site|visit site|open website|their website|go inside|show me the site|open the project)\b/.test(
+      lower,
+    ) ||
+      (item.navSection === "websites" &&
+        /\b(open|show|see|visit|inside)\b/.test(lower)))
+  ) {
     return sanitizeNavigatorCommand(
       {
-        command: "open_website",
+        command: "show_website",
         navId: item.navId,
         section: item.navSection,
-        speech: `Opening the live website for ${item.title}.`,
+        speech: `I'll highlight ${item.title}, then open the live website for you.`,
       },
       catalog,
     );
   }
 
   if (/\b(open card|open project|details|detail page)\b/.test(lower) && item) {
+    const cmd =
+      item.navSection === "websites" ? "show_website" : "open_detail";
     return sanitizeNavigatorCommand(
       {
-        command: "open_detail",
+        command: cmd,
         navId: item.navId,
         section: item.navSection,
         speech: `Opening ${item.title} — one moment.`,

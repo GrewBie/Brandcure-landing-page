@@ -5,6 +5,7 @@ import {
   openPortfolioForTour,
   summarizePortfolioItem,
 } from "@/lib/portfolio/run-nav-command";
+import { showcaseWebsiteProject } from "@/lib/portfolio/voice-nav-sequence";
 import type { NavItem } from "@/types/navigator";
 
 const CARD_DWELL_MS = 5_500;
@@ -44,11 +45,15 @@ export async function presentCuratedPortfolioTour(
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i]!;
-      summarizePortfolioItem(catalog, item.navId);
 
-      if (item.videoUrl && item.navSection !== "websites") {
-        await delay(800);
-        browserNav.playVideo(item.navId);
+      if (item.navSection === "websites" && item.websiteUrl) {
+        await showcaseWebsiteProject(catalog, item.navId);
+      } else {
+        summarizePortfolioItem(catalog, item.navId);
+        if (item.videoUrl) {
+          await delay(800);
+          browserNav.playVideo(item.navId);
+        }
       }
 
       if (i < items.length - 1) {

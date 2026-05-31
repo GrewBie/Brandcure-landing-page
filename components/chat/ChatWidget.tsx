@@ -16,6 +16,7 @@ import { parseAgentResponse, type ChatAction } from "@/lib/chat-actions";
 import { inferCommandFromText } from "@/lib/agent-nav-fallback";
 import { resolveNavId } from "@/lib/agent-guardrails";
 import { applyAgentNavCommand } from "@/lib/portfolio/apply-agent-command";
+import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
 import {
   planCuratedPortfolioTour,
   runCuratedPortfolioTour,
@@ -150,26 +151,27 @@ export function ChatWidget() {
         case "open_portfolio":
           openPortfolioForTour();
           break;
+        case "show_website":
+        case "open_website":
+        case "open_detail":
+          if (navId) {
+            void executeVoiceNavCommand(catalogRef.current, {
+              command:
+                action.type === "open_website" ? "show_website" : action.type,
+              navId,
+              section: catalogRef.current.find((i) => i.navId === navId)
+                ?.navSection,
+              speech: "",
+            });
+          }
+          break;
         case "scroll_to":
         case "highlight":
         case "play_video":
         case "summarize_card":
-        case "open_detail":
-        case "open_website":
           if (navId) {
-            applyAgentNavCommand(catalogRef.current, {
-              command:
-                action.type === "scroll_to"
-                  ? "scroll_to"
-                  : action.type === "highlight"
-                    ? "highlight"
-                    : action.type === "play_video"
-                      ? "play_video"
-                      : action.type === "summarize_card"
-                        ? "summarize_card"
-                        : action.type === "open_detail"
-                          ? "open_detail"
-                          : "open_website",
+            void executeVoiceNavCommand(catalogRef.current, {
+              command: action.type,
               navId,
               section: catalogRef.current.find((i) => i.navId === navId)
                 ?.navSection,

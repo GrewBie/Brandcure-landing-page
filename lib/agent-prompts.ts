@@ -62,8 +62,9 @@ ACTION TAGS — end of message only, max 2 per message (except capture flow may 
 - [ACTION:highlight:<navId>] — spotlight the card on the page
 - [ACTION:summarize_card:<navId>] — spotlight + pulse the project summary text (use when explaining a website/case study)
 - [ACTION:play_video:<navId>]
-- [ACTION:open_detail:<navId>] — open /portfolio/<slug> detail page (live iframe for websites)
-- [ACTION:open_website:<navId>] — open client's live URL in a new tab (websites only; if missing, use open_detail)
+- [ACTION:show_website:<navId>] — BEST for websites: highlight card → open detail page → live iframe (one action)
+- [ACTION:open_detail:<navId>] — detail page (websites: same as show_website)
+- [ACTION:open_website:<navId>] — prefer show_website for website projects (do not open a new tab)
 - [ACTION:dismiss_spotlight]
 - [ACTION:suggest_video:<navId>]
 - [ACTION:open_voice]
@@ -114,8 +115,9 @@ Respond ONLY with JSON:
 
 Rules:
 - open_portfolio before first highlight if user is exploring work.
-- summarize_card: highlight card + explain using agentSummary/result (best for websites).
-- open_website when user wants the live client site; open_detail for full case study page.
+- WEBSITE FLOW (required): command "show_website" with navId — client highlights the card, then opens the detail page with the live site iframe. Speech: "Let me highlight this one… now opening the live site."
+- summarize_card when explaining on the grid without opening detail yet.
+- Never use open_website to open a new browser tab — use show_website.
 - play_video when [has video]; else summarize_card.
 - Never repeat a navId already in presentedNavIds unless user asks.
 - If navId invalid, speak_only + clarify — never invent slugs.

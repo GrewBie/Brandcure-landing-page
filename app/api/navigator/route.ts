@@ -28,6 +28,7 @@ const COMMAND_TYPES: NavigatorCommandType[] = [
   "open_audit",
   "open_detail",
   "open_website",
+  "show_website",
   "summarize_card",
 ];
 

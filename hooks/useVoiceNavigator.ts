@@ -6,11 +6,11 @@ import { browserNav } from "@/lib/browser-navigator";
 import { patchFromUserText } from "@/lib/agent-state";
 import { playElevenLabsTts } from "@/lib/client/elevenlabs-audio";
 import { speakWithBrowserTts } from "@/lib/client/browser-tts";
-import { applyAgentNavCommand } from "@/lib/portfolio/apply-agent-command";
 import {
   planCuratedPortfolioTour,
   runCuratedPortfolioTour,
 } from "@/lib/portfolio/maybe-curate-after-turn";
+import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
 import { focusPortfolioItem } from "@/lib/portfolio/run-nav-command";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { classifyAndCommand } from "@/lib/navigator-agent";
@@ -42,6 +42,27 @@ export const NAV_EVENTS = {
   filterIndustry: "nav:filter-industry",
   showAll: "nav:show-all",
 } as const;
+
+const SYNC_ONLY_COMMANDS = new Set([
+  "next_item",
+  "prev_item",
+  "capture_lead",
+  "open_audit",
+  "show_all",
+  "filter_industry",
+]);
+
+const NAV_HEAVY_COMMANDS = new Set([
+  "show_website",
+  "open_website",
+  "open_detail",
+  "highlight",
+  "summarize_card",
+  "play_video",
+  "scroll_to",
+  "open_portfolio",
+  "dismiss_spotlight",
+]);
 
 function getRecognitionCtor() {
   if (typeof window === "undefined") return null;
@@ -356,11 +377,6 @@ export function useVoiceNavigator({
           onOpenAudit?.();
           break;
         default:
-          applyAgentNavCommand(catalogRef.current, command);
-          if (command.section) sectionRef.current = command.section;
-          if (command.navId) {
-            indexRef.current = browserNav.getItemIndex(command.navId);
-          }
           break;
       }
     },
@@ -400,7 +416,7 @@ export function useVoiceNavigator({
       try {
         command = await classifyAndCommand(
           nextMessages,
-          sessionRef.current,
+          baseSession,
           catalogRef.current,
         );
       } catch {
@@ -428,23 +444,15 @@ export function useVoiceNavigator({
         nextMessages,
       );
 
-      const visualPortfolio = new Set([
-        "highlight",
-        "play_video",
-        "summarize_card",
-      ]);
       const aiShowedCard =
-        Boolean(command.navId) && visualPortfolio.has(command.command);
+        Boolean(command.navId) && NAV_HEAVY_COMMANDS.has(command.command);
 
       curatedTourRef.current = null;
       if (plan) {
         patchSession(plan.sessionPatch);
-        if (!aiShowedCard) {
+        if (!aiShowedCard && command.command === "speak_only") {
           curatedTourRef.current = plan.picks;
-          if (
-            command.command === "speak_only" &&
-            !command.speech.toLowerCase().includes("show")
-          ) {
+          if (!command.speech.toLowerCase().includes("show")) {
             const names = plan.picks.map((p) => p.title).join(", ");
             command.speech = `Based on what you shared, I'll walk you through ${plan.picks.length} projects that fit — ${names}.`;
           }
@@ -452,8 +460,6 @@ export function useVoiceNavigator({
       }
 
       applyNavigatorCommand(command, catalogItem?.title);
-      executeCommand(command);
-      syncNavPosition(sectionRef.current ?? undefined, indexRef.current);
 
       if (
         shouldSteerToLeadCapture(mergedSession) &&
@@ -464,15 +470,36 @@ export function useVoiceNavigator({
       }
 
       recordTurn("assistant", command.speech, "voice");
+
+      const runNav = async () => {
+        if (SYNC_ONLY_COMMANDS.has(command.command)) {
+          executeCommand(command);
+        } else {
+          await executeVoiceNavCommand(catalogRef.current, command);
+        }
+        if (command.section) sectionRef.current = command.section;
+        if (command.navId) {
+          indexRef.current = browserNav.getItemIndex(command.navId);
+        }
+        syncNavPosition(sectionRef.current ?? undefined, indexRef.current);
+      };
+
       try {
-        await speak(command.speech);
-      } catch (err) {
-        console.error("[voice] speak failed:", err);
-        await speakWithBrowserTts(command.speech);
+        await Promise.all([
+          (async () => {
+            try {
+              await speak(command.speech);
+            } catch (err) {
+              console.error("[voice] speak failed:", err);
+              await speakWithBrowserTts(command.speech);
+            }
+          })(),
+          runNav(),
+        ]);
       } finally {
         const curated = curatedTourRef.current;
         curatedTourRef.current = null;
-        if (curated?.length) {
+        if (curated?.length && !NAV_HEAVY_COMMANDS.has(command.command)) {
           runCuratedPortfolioTour(catalogRef.current, curated);
         }
         processingRef.current = false;

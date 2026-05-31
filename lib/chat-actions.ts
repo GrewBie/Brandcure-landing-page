@@ -13,6 +13,7 @@ export type ChatActionType =
   | "prefill_whatsapp"
   | "open_detail"
   | "open_website"
+  | "show_website"
   | "summarize_card";
 
 export type ChatAction = {
@@ -33,6 +34,7 @@ const KNOWN: ChatActionType[] = [
   "prefill_whatsapp",
   "open_detail",
   "open_website",
+  "show_website",
   "summarize_card",
 ];
 

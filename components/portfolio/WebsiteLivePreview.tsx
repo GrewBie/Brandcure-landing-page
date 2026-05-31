@@ -18,6 +18,7 @@ export function WebsiteLivePreview({
 }: Props) {
   return (
     <div
+      id="live-website-preview"
       className={cn(
         "relative overflow-hidden rounded-lg border border-[var(--border)] bg-white",
         aspectClass,

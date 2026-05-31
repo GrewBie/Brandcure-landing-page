@@ -1,5 +1,6 @@
 import { browserNav } from "@/lib/browser-navigator";
 import { goToPortfolioPage, isOnPortfolioPage } from "@/lib/agent-tour";
+import { dispatchVoiceNav } from "@/lib/portfolio/voice-nav-events";
 import {
   consumePendingNav,
   hasItemInDom,
@@ -102,7 +103,7 @@ export function openPortfolioDetail(navId: string): void {
   if (typeof window === "undefined") return;
   const path = `/portfolio/${navId}`;
   if (window.location.pathname === path) return;
-  window.location.assign(path);
+  dispatchVoiceNav({ type: "open_detail", navId });
 }
 
 export function openProjectWebsite(
@@ -152,6 +153,13 @@ export function applyPendingNavAction(
 ): void {
   if (action.type === "scroll_to" && action.section) {
     browserNav.scrollToSection(action.section);
+    return;
+  }
+
+  if (action.type === "highlight_then_detail" && action.navId) {
+    void import("@/lib/portfolio/voice-nav-sequence").then(({ showcaseWebsiteProject }) =>
+      showcaseWebsiteProject(catalog, action.navId!),
+    );
     return;
   }
 
