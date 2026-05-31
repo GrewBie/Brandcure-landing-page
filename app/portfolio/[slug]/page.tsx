@@ -89,11 +89,11 @@ export default async function PortfolioProjectPage({ params }: Props) {
           </div>
         )}
         {project.serviceType === "websites" && project.websiteUrl ? (
-          <div className="mt-12 max-w-4xl">
+          <div className="mt-12 w-full">
             <WebsiteLivePreview
               url={project.websiteUrl}
               title={project.title}
-              aspectClass="aspect-[16/10] min-h-[420px] w-full"
+              aspectClass="h-[min(88vh,980px)] w-full"
             />
           </div>
         ) : (
