@@ -29,7 +29,7 @@ import {
 } from "@/lib/contact";
 import { patchFromUserText } from "@/lib/agent-state";
 import { sendChatMessage } from "@/lib/navigator-agent";
-import { submitAgentLead } from "@/lib/submit-agent-lead";
+import { navigateToContactForm } from "@/lib/contact-capture";
 import { cn } from "@/lib/cn";
 import {
   micButtonLabel,
@@ -88,29 +88,13 @@ export function ChatWidget() {
   const lastIntroRef = useRef(introRequestId);
   const introRunningRef = useRef(false);
 
-  const openLeadCapture = useCallback(() => {
-    const contact = document.getElementById("contact");
-    if (contact) {
-      contact.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      setShowLeadForm(true);
-    }
-  }, []);
-
-  const captureLead = useCallback(() => {
-    recordTurn(
-      "assistant",
-      "Perfect — I've noted your details. Our team will reach out on WhatsApp shortly.",
-      "chat",
-    );
-    patchSession({ leadStage: "captured" });
-    void submitAgentLead(
-      { ...session, leadStage: "captured" },
-      agentMessages,
-      "chat",
-    );
-    setShowLeadForm(true);
-  }, [recordTurn, patchSession, session, agentMessages]);
+  const steerToContactForm = useCallback(() => {
+    navigateToContactForm();
+    setShowLeadForm(false);
+    setBadge(false);
+    setOpen(false);
+    setShowMobileTextChat(false);
+  }, [setOpen, setBadge]);
 
   const {
     state: voiceState,
@@ -124,8 +108,7 @@ export function ChatWidget() {
     speakOutbound,
   } = useVoiceNavigator({
     catalog,
-    onCaptureLead: captureLead,
-    onOpenAudit: openLeadCapture,
+    onSteerToContact: steerToContactForm,
   });
 
   useEffect(() => {
@@ -214,10 +197,10 @@ export function ChatWidget() {
           if (!inCall) startCall();
           break;
         case "open_audit":
-          openLeadCapture();
-          break;
         case "capture_lead":
-          setShowLeadForm(true);
+          patchSession({ leadStage: "ready" });
+          steerToContactForm();
+          if (inCall) endCall();
           break;
         case "prefill_whatsapp": {
           setWhatsappLink(
@@ -231,7 +214,16 @@ export function ChatWidget() {
           break;
       }
     },
-    [findItem, inCall, openLeadCapture, portfolioMobileVoice, setOpen, startCall],
+    [
+      findItem,
+      inCall,
+      endCall,
+      patchSession,
+      portfolioMobileVoice,
+      setOpen,
+      startCall,
+      steerToContactForm,
+    ],
   );
 
   const runIntro = useCallback(() => {
@@ -378,6 +370,14 @@ export function ChatWidget() {
       );
       recordTurn("assistant", fallback.speech, "chat");
       applyAgentNavCommand(catalogRef.current, fallback);
+      if (
+        fallback.command === "open_audit" ||
+        fallback.command === "capture_lead"
+      ) {
+        patchSession({ leadStage: "ready" });
+        steerToContactForm();
+        if (inCall) endCall();
+      }
       if (fallback.stateUpdate) patchSession(fallback.stateUpdate);
 
       const fullMessages = [

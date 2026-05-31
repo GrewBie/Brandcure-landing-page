@@ -12,6 +12,7 @@ import {
 } from "@/lib/portfolio/maybe-curate-after-turn";
 import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
 import { focusPortfolioItem } from "@/lib/portfolio/run-nav-command";
+import { CONTACT_CLOSING_SPEECH } from "@/lib/contact-capture";
 import { shouldSteerToLeadCapture } from "@/lib/agent-tour";
 import { classifyAndCommand } from "@/lib/navigator-agent";
 import type {
@@ -34,8 +35,8 @@ const END_OF_TURN_MS = 1400;
 
 export type UseVoiceNavigatorOptions = {
   catalog: NavItem[];
-  onCaptureLead?: () => void;
-  onOpenAudit?: () => void;
+  /** Scroll to #contact and close chat UI — does not end the call (hook ends after TTS). */
+  onSteerToContact?: () => void;
 };
 
 export const NAV_EVENTS = {
@@ -71,8 +72,7 @@ function getRecognitionCtor() {
 
 export function useVoiceNavigator({
   catalog,
-  onCaptureLead,
-  onOpenAudit,
+  onSteerToContact,
 }: UseVoiceNavigatorOptions) {
   const {
     messages,
@@ -212,6 +212,7 @@ export function useVoiceNavigator({
     async () => {},
   );
   const scheduleEndOfTurnRef = useRef<() => void>(() => {});
+  const endCallRef = useRef<() => void>(() => {});
 
   const resumeCallAfterTts = useCallback(() => {
     if (!inCallRef.current) {
@@ -371,16 +372,14 @@ export function useVoiceNavigator({
           }
           break;
         case "capture_lead":
-          onCaptureLead?.();
-          break;
         case "open_audit":
-          onOpenAudit?.();
+          onSteerToContact?.();
           break;
         default:
           break;
       }
     },
-    [focusNavItem, onCaptureLead, onOpenAudit],
+    [focusNavItem, onSteerToContact],
   );
 
   const processUtterance = useCallback(
@@ -461,10 +460,16 @@ export function useVoiceNavigator({
 
       applyNavigatorCommand(command, catalogItem?.title);
 
+      const contactHandoff =
+        command.command === "capture_lead" ||
+        command.command === "open_audit";
+      if (contactHandoff) {
+        command.speech = CONTACT_CLOSING_SPEECH;
+      }
+
       if (
         shouldSteerToLeadCapture(mergedSession) &&
-        command.command !== "capture_lead" &&
-        command.command !== "open_audit"
+        !contactHandoff
       ) {
         patchSession({ leadStage: "ready" });
       }
@@ -504,7 +509,11 @@ export function useVoiceNavigator({
         }
         processingRef.current = false;
         listeningPausedRef.current = false;
-        resumeCallAfterTts();
+        if (contactHandoff) {
+          endCallRef.current();
+        } else {
+          resumeCallAfterTts();
+        }
       }
     },
     [
@@ -660,6 +669,8 @@ export function useVoiceNavigator({
     stopAudio,
     setVoiceState,
   ]);
+
+  endCallRef.current = endCall;
 
   /** Keeps the mic alive for the whole call (Chrome often stops continuous STT). */
   useEffect(() => {

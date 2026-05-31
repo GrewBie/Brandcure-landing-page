@@ -1,5 +1,6 @@
 "use client";
 
+import { consumeContactFormFocus } from "@/lib/contact-capture";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -20,6 +21,21 @@ export function HashScroll() {
       const top =
         el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
       window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+
+      if (id === "contact" && consumeContactFormFocus()) {
+        window.setTimeout(() => {
+          const contact = document.getElementById("contact");
+          const nameInput = contact?.querySelector<HTMLInputElement>(
+            "#name, input[name='name']",
+          );
+          nameInput?.focus({ preventScroll: true });
+          contact?.classList.add("contact-form-neha-focus");
+          window.setTimeout(
+            () => contact?.classList.remove("contact-form-neha-focus"),
+            4_000,
+          );
+        }, 550);
+      }
     };
 
     // Wait for home sections to paint after route change.

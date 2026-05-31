@@ -130,7 +130,7 @@ export function LeadCapture() {
                   <Field id="email" label="EMAIL ADDRESS *" error={errors.email?.message}>
                     <input id="email" type="email" className={inputClass} autoComplete="email" {...register("email")} />
                   </Field>
-                  <Field id="phone" label="WHATSAPP / PHONE" error={errors.phone?.message}>
+                  <Field id="phone" label="PHONE (OPTIONAL)" error={errors.phone?.message}>
                     <input id="phone" type="tel" className={inputClass} autoComplete="tel" {...register("phone")} />
                   </Field>
                   <Field id="business" label="BUSINESS NAME & INDUSTRY" error={errors.business?.message}>

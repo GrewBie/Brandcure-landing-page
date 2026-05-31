@@ -92,7 +92,7 @@ export function sessionToPromptBlock(session: AgentSessionState): string {
   ];
 
   if (session.name) lines.push(`- Name: ${session.name}`);
-  if (session.phone) lines.push(`- Phone/WhatsApp: ${session.phone}`);
+  if (session.phone) lines.push(`- Phone (optional): ${session.phone}`);
   if (session.business) lines.push(`- Business: ${session.business}`);
   if (session.city) lines.push(`- City: ${session.city}`);
   if (session.challenge) lines.push(`- Challenge/goal: ${session.challenge}`);

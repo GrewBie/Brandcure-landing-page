@@ -140,7 +140,8 @@ export function inferCommandFromText(
     return sanitizeNavigatorCommand(
       {
         command: "open_audit",
-        speech: "I'll take you to our free audit form — share your name and WhatsApp.",
+        speech:
+          "Lovely chatting with you! I've opened our contact form — please add your name, email, and a bit about your business. Our team will reply within 24 hours.",
       },
       catalog,
     );

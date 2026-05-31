@@ -1,5 +1,8 @@
 export const VOICE_NAV_EVENT = "brandcure:voice-nav";
 
+/** Client navigation to /#contact without full page reload. */
+export const CONTACT_NAV_EVENT = "brandcure:navigate-contact";
+
 export type VoiceNavDetail = {
   type: "open_detail" | "open_portfolio";
   navId?: string;

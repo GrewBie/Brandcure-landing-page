@@ -5,9 +5,11 @@ import {
   markPortfolioAgentTour,
 } from "@/lib/portfolio/portfolio-entry";
 import {
+  CONTACT_NAV_EVENT,
   VOICE_NAV_EVENT,
   type VoiceNavDetail,
 } from "@/lib/portfolio/voice-nav-events";
+import { markContactFormFocus } from "@/lib/contact-capture";
 import { usePortfolioExperience } from "@/contexts/PortfolioExperienceContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -40,11 +42,25 @@ export function PortfolioNavBridge() {
       }
     };
 
+    const goContact = () => {
+      markContactFormFocus();
+      const onHome = window.location.pathname === "/";
+      if (!onHome) {
+        router.push("/#contact");
+        return;
+      }
+      if (window.location.hash !== "#contact") {
+        router.push("/#contact");
+      }
+    };
+
     window.addEventListener(PORTFOLIO_AGENT_NAV_EVENT, goAgentPortfolio);
     window.addEventListener(VOICE_NAV_EVENT, onVoiceNav);
+    window.addEventListener(CONTACT_NAV_EVENT, goContact);
     return () => {
       window.removeEventListener(PORTFOLIO_AGENT_NAV_EVENT, goAgentPortfolio);
       window.removeEventListener(VOICE_NAV_EVENT, onVoiceNav);
+      window.removeEventListener(CONTACT_NAV_EVENT, goContact);
     };
   }, [router, setMode, setShowWelcome]);
 

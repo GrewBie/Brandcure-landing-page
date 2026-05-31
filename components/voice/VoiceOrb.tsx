@@ -6,7 +6,7 @@ import { useChat } from "@/contexts/ChatContext";
 import { useNavCatalog } from "@/contexts/NavCatalogContext";
 import { usePortfolioExperience } from "@/contexts/PortfolioExperienceContext";
 import { useVoiceNavigator } from "@/hooks/useVoiceNavigator";
-import { submitAgentLead } from "@/lib/submit-agent-lead";
+import { navigateToContactForm } from "@/lib/contact-capture";
 import { NEHA_INTRO_SPEECH } from "@/lib/voice/neha-intro";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -22,30 +22,11 @@ export function VoiceOrb() {
   const onPortfolio = pathname?.startsWith("/portfolio") ?? false;
   const manualBrowse = onPortfolio && mode === "manual";
 
-  const openLeadCapture = useCallback(() => {
-    const contact = document.getElementById("contact");
-    if (contact) {
-      contact.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      setOpen(true);
-    }
+  const steerToContactForm = useCallback(() => {
+    navigateToContactForm();
+    setPanelOpen(false);
+    setOpen(false);
   }, [setOpen]);
-
-  const captureLead = useCallback(() => {
-    recordTurn(
-      "assistant",
-      "Perfect — I've noted your details. Our team will reach out on WhatsApp shortly.",
-      "voice",
-    );
-    patchSession({ leadStage: "captured" });
-    void submitAgentLead(
-      { ...session, leadStage: "captured" },
-      messages,
-      "voice",
-    );
-    setPanelOpen(true);
-    setOpen(true);
-  }, [recordTurn, patchSession, setOpen, session, messages]);
 
   const {
     state,
@@ -60,8 +41,7 @@ export function VoiceOrb() {
     submitText,
   } = useVoiceNavigator({
     catalog,
-    onCaptureLead: captureLead,
-    onOpenAudit: openLeadCapture,
+    onSteerToContact: steerToContactForm,
   });
 
   const lastRequestRef = useRef(voiceRequestId);
