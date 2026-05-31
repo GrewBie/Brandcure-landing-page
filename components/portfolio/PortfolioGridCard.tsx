@@ -37,10 +37,13 @@ export function PortfolioGridCard({
   const videoUrl = getProjectPreviewVideoUrl(project);
   const parsed = parseVideoUrl(videoUrl);
   const hasVideo = parsed.provider !== "none";
-  const thumbnailUrl = getProjectCardThumbnail(project);
   const embedAutoplay = videoEmbedAutoplaySrc(parsed);
-  const showIframe =
-    hover && hasVideo && isIframeVideoProvider(parsed.provider) && embedAutoplay;
+  const iframeSrc =
+    hasVideo && isIframeVideoProvider(parsed.provider) && parsed.embedUrl
+      ? hover && embedAutoplay
+        ? embedAutoplay
+        : parsed.embedUrl
+      : undefined;
 
   const cardTags = [
     project.automationSubtypeLabel ?? project.serviceTypeLabel,
@@ -61,9 +64,16 @@ export function PortfolioGridCard({
     } else {
       v.pause();
       v.currentTime = 0;
-      v.muted = false;
+      v.muted = true;
     }
   }, [hover, parsed.provider]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || parsed.provider !== "file") return;
+    v.muted = true;
+    void v.load();
+  }, [parsed.provider, parsed.url]);
 
   const onMove = (e: React.MouseEvent) => {
     if (!hover || hasVideo) return;
@@ -109,40 +119,37 @@ export function PortfolioGridCard({
             </span>
           )}
 
-          <Image
-            data-card-thumb
-            src={thumbnailUrl}
-            alt=""
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className={cn(
-              "object-cover transition-[transform,opacity] duration-300 ease-out will-change-transform",
-              hover && hasVideo && "opacity-0",
-            )}
-          />
-
           {hasVideo && parsed.provider === "file" && (
             <video
               ref={videoRef}
               src={parsed.url}
               playsInline
               loop
-              preload="metadata"
-              className={cn(
-                "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-                hover ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0",
-              )}
+              preload="auto"
+              muted
+              className="absolute inset-0 z-10 h-full w-full object-cover"
             />
           )}
 
-          {showIframe && (
+          {iframeSrc && (
             <iframe
-              key={embedAutoplay}
-              src={embedAutoplay}
+              key={iframeSrc}
+              src={iframeSrc}
               title={project.title}
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
               className="absolute inset-0 z-10 h-full w-full border-0"
+            />
+          )}
+
+          {!hasVideo && (
+            <Image
+              data-card-thumb
+              src={getProjectCardThumbnail(project)}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 ease-out will-change-transform"
             />
           )}
 
