@@ -28,7 +28,6 @@ export function WebsiteCard({ project, section, index }: Props) {
         <WebsiteLivePreview
           url={previewUrl}
           title={project.title}
-          posterUrl={project.heroImageUrl}
           navId={project.slug}
         />
       ) : (

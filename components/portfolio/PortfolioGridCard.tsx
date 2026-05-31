@@ -73,10 +73,8 @@ export function PortfolioGridCard({
           <WebsiteLivePreview
             url={websiteUrl}
             title={project.title}
-            posterUrl={project.heroImageUrl}
             navId={project.slug}
             aspectClass="h-[210px]"
-            imageSizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
         <div className="px-7 pb-7 pt-5">
