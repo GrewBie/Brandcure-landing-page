@@ -155,12 +155,14 @@ export function curatedPicksPromptBlock(
   session: AgentSessionState,
 ): string {
   if (picks.length === 0) return "";
-  const lines = picks.map(
-    (p, i) =>
-      `${i + 1}. navId="${p.navId}" | ${p.navSection} | "${p.title}" (${p.industry}) — ${p.result}`,
-  );
+  const lines = picks.map((p, i) => {
+    const summary = p.agentSummary?.trim() || p.result;
+    const live = p.websiteUrl ? " [live website]" : p.videoUrl ? " [has video]" : "";
+    return `${i + 1}. navId="${p.navId}" | ${p.navSection}${live} | "${p.title}" (${p.industry}) — ${summary}`;
+  });
   return [
-    "CURATED PORTFOLIO PICKS for this visitor (show ONLY these 2–3, in order — do not pick random other navIds):",
+    "CURATED PORTFOLIO PICKS for this visitor (show ONLY these 2–3, in order — one at a time):",
+    "For each pick: command show_website (websites) or summarize_card/play_video, and speech must describe THAT project (title, results, why it fits them) before moving to the next navId.",
     ...lines,
     session.business ? `Tailor narration to their business: ${session.business}.` : "",
     session.challenge ? `Their goal: ${session.challenge}.` : "",

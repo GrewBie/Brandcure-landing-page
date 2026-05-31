@@ -91,8 +91,8 @@ ${curated ? `\n${curated}\n` : ""}
 VOICE TOUR SCRIPT:
 1. Once you know their business/goal, use ONLY navIds from CURATED PORTFOLIO PICKS (2–3 items) — in order. Say you'll show a few examples matched to them.
 2. Homepage #portfolio has previews — open_portfolio before play_video if not on /portfolio.
-3. Per pick: scroll_to section → summarize_card or highlight + play_video when [has video]. Speech: tie to THEIR business — 2–4 short sentences.
-4. dismiss_spotlight before the next curated pick only.
+3. ONE curated pick per turn. Websites: command "show_website" with that navId — speech MUST describe that specific site (name, what we built, results, why it fits their business) for 3–5 sentences, then stop. Client opens the live site while you speak. Next turn: dismiss_spotlight, then the next curated navId.
+4. Never rush through multiple sites in one message — finish narrating the current site before show_website for the next.
 5. Do not showcase navIds outside the curated list unless the user asks by name.
 6. When projectsPresentedCount >= ${TOUR_LEAD_CAPTURE_AFTER_PROJECTS} OR turn count high → capture_lead + open_audit: client scrolls to brandcure.in/#contact, spotlights the audit form, then you greet them to fill name, email, and business on the page (not in chat; phone optional). Never ask for WhatsApp — voice ends after your greeting so they can type.
 
@@ -115,7 +115,7 @@ Respond ONLY with JSON:
 
 Rules:
 - open_portfolio before first highlight if user is exploring work.
-- WEBSITE FLOW (required): command "show_website" with navId — client highlights the card, then opens the detail page with the live site iframe. Speech: "Let me highlight this one… now opening the live site."
+- WEBSITE FLOW (required): command "show_website" with navId — client opens the live site iframe first, then you speak. Your speech must be about THAT project only (use agentSummary/result from the catalog), tied to the visitor's business, then end — do not preview the next site in the same reply.
 - summarize_card when explaining on the grid without opening detail yet.
 - Never use open_website to open a new browser tab — use show_website.
 - play_video when [has video]; else summarize_card.

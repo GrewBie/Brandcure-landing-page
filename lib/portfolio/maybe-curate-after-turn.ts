@@ -4,7 +4,11 @@ import {
   pickInterestPortfolio,
   shouldCuratePortfolioTour,
 } from "@/lib/portfolio/pick-interest-matches";
-import { presentCuratedPortfolioTour } from "@/lib/portfolio/present-curated-tour";
+import {
+  presentCuratedPortfolioTour,
+  type GuidedTourDeps,
+  runGuidedPortfolioTour,
+} from "@/lib/portfolio/present-curated-tour";
 import type { AgentMessage, AgentSessionState, AgentStatePatch } from "@/types/agent-state";
 import type { NavItem } from "@/types/navigator";
 
@@ -50,10 +54,19 @@ export function planCuratedPortfolioTour(
   };
 }
 
-/** Run the visual tour (call after assistant finishes speaking in voice). */
+/** Run the visual tour for chat (no narration). */
 export function runCuratedPortfolioTour(
   catalog: NavItem[],
   picks: NavItem[],
 ): void {
   void presentCuratedPortfolioTour(catalog, picks);
+}
+
+/** Voice: narrate each pick, then advance to the next. */
+export function runCuratedPortfolioTourWithNarration(
+  catalog: NavItem[],
+  picks: NavItem[],
+  deps: GuidedTourDeps,
+): void {
+  void runGuidedPortfolioTour(catalog, picks, deps);
 }

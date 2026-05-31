@@ -8,8 +8,12 @@ import { playElevenLabsTts } from "@/lib/client/elevenlabs-audio";
 import { speakWithBrowserTts } from "@/lib/client/browser-tts";
 import {
   planCuratedPortfolioTour,
-  runCuratedPortfolioTour,
 } from "@/lib/portfolio/maybe-curate-after-turn";
+import { runGuidedPortfolioTour } from "@/lib/portfolio/present-curated-tour";
+import {
+  buildProjectNarration,
+  isWebsiteShowcaseCommand,
+} from "@/lib/portfolio/website-showcase-speech";
 import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
 import { focusPortfolioItem } from "@/lib/portfolio/run-nav-command";
 import {
@@ -469,6 +473,18 @@ export function useVoiceNavigator({
         command.speech = CONTACT_CLOSING_SPEECH;
       }
 
+      const websiteShowcase = isWebsiteShowcaseCommand(
+        command.command,
+        catalogItem,
+      );
+      if (websiteShowcase && catalogItem) {
+        command.speech = buildProjectNarration(
+          catalogItem,
+          mergedSession,
+          command.speech,
+        );
+      }
+
       if (
         shouldSteerToLeadCapture(mergedSession) &&
         !contactHandoff
@@ -505,15 +521,34 @@ export function useVoiceNavigator({
           onSteerToContact?.();
           await runContactHandoffSequence();
           await speakHandoff();
+        } else if (websiteShowcase) {
+          await runNav();
+          await speakHandoff();
         } else {
           await Promise.all([speakHandoff(), runNav()]);
         }
       } finally {
         const curated = curatedTourRef.current;
         curatedTourRef.current = null;
-        if (curated?.length && !NAV_HEAVY_COMMANDS.has(command.command)) {
-          runCuratedPortfolioTour(catalogRef.current, curated);
+
+        if (
+          curated?.length &&
+          command.command === "speak_only" &&
+          !contactHandoff
+        ) {
+          await runGuidedPortfolioTour(catalogRef.current, curated, {
+            speak: async (text) => {
+              try {
+                await speak(text);
+              } catch {
+                await speakWithBrowserTts(text);
+              }
+            },
+            recordTurn,
+            getSession: () => sessionRef.current,
+          });
         }
+
         processingRef.current = false;
         listeningPausedRef.current = false;
         if (contactHandoff) {

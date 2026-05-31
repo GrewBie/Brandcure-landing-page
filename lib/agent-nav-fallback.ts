@@ -1,5 +1,6 @@
 import { findNavItemByUserText, sanitizeNavigatorCommand } from "@/lib/agent-guardrails";
 import { planCuratedPortfolioTour } from "@/lib/portfolio/maybe-curate-after-turn";
+import { buildProjectNarration } from "@/lib/portfolio/website-showcase-speech";
 import type { AgentMessage, AgentSessionState } from "@/types/agent-state";
 import type { NavItem, NavigatorCommand, NavigatorSection } from "@/types/navigator";
 
@@ -82,7 +83,7 @@ export function inferCommandFromText(
         command: "show_website",
         navId: item.navId,
         section: item.navSection,
-        speech: `I'll highlight ${item.title}, then open the live website for you.`,
+        speech: buildProjectNarration(item, session),
       },
       catalog,
     );
