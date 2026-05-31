@@ -25,7 +25,7 @@ export function PortfolioDetailMedia({ project, className }: Props) {
       <div
         className={cn(
           "relative w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--brand-black)]",
-          "h-[min(72vh,720px)] min-h-[280px] sm:min-h-[360px]",
+          "h-[min(72vh,720px)] min-h-[280px] overscroll-contain sm:min-h-[360px]",
           className,
         )}
       >

@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ScrollProvider } from "@/contexts/ScrollContext";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { AgentProvider } from "@/contexts/AgentContext";
 import { NavCatalogProvider } from "@/contexts/NavCatalogContext";
@@ -29,6 +30,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
           </AgentProvider>
         </PortfolioExperienceProvider>
       </NavCatalogProvider>
+      </ScrollProvider>
     </ThemeProvider>
   );
 }
