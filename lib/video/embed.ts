@@ -1,4 +1,9 @@
-export type VideoProvider = "youtube" | "vimeo" | "file" | "none";
+export type VideoProvider =
+  | "youtube"
+  | "vimeo"
+  | "google-drive"
+  | "file"
+  | "none";
 
 export type ParsedVideo = {
   provider: VideoProvider;
@@ -17,6 +22,34 @@ const YOUTUBE_PATTERNS = [
 ];
 
 const VIMEO_PATTERN = /vimeo\.com\/(?:video\/)?(\d+)/;
+
+const GOOGLE_DRIVE_PATTERNS = [
+  /drive\.google\.com\/file\/d\/([^/]+)/,
+  /drive\.google\.com\/open\?id=([^&]+)/,
+  /drive\.google\.com\/uc\?(?:export=(?:download|view)&)?id=([^&]+)/,
+];
+
+export function extractGoogleDriveFileId(
+  rawUrl: string | null | undefined,
+): string | undefined {
+  const url = (rawUrl ?? "").trim();
+  if (!url) return undefined;
+  for (const pattern of GOOGLE_DRIVE_PATTERNS) {
+    const match = url.match(pattern);
+    if (match?.[1]) return match[1];
+  }
+  return undefined;
+}
+
+export function isIframeVideoProvider(
+  provider: VideoProvider,
+): provider is "youtube" | "vimeo" | "google-drive" {
+  return (
+    provider === "youtube" ||
+    provider === "vimeo" ||
+    provider === "google-drive"
+  );
+}
 
 export function parseVideoUrl(rawUrl: string | null | undefined): ParsedVideo {
   const url = (rawUrl ?? "").trim();
@@ -46,6 +79,16 @@ export function parseVideoUrl(rawUrl: string | null | undefined): ParsedVideo {
     };
   }
 
+  const driveId = extractGoogleDriveFileId(url);
+  if (driveId) {
+    return {
+      provider: "google-drive",
+      url,
+      id: driveId,
+      embedUrl: `https://drive.google.com/file/d/${driveId}/preview`,
+    };
+  }
+
   if (/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url)) {
     return { provider: "file", url };
   }
@@ -68,6 +111,9 @@ export function videoEmbedAutoplaySrc(parsed: ParsedVideo): string | undefined {
   if (parsed.provider === "vimeo") {
     const join = parsed.embedUrl.includes("?") ? "&" : "?";
     return `${parsed.embedUrl}${join}autoplay=1&muted=0`;
+  }
+  if (parsed.provider === "google-drive") {
+    return parsed.embedUrl;
   }
   return parsed.embedUrl;
 }

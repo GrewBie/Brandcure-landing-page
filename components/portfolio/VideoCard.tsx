@@ -2,7 +2,7 @@
 
 import { browserNav } from "@/lib/browser-navigator";
 import { cn } from "@/lib/cn";
-import { parseVideoUrl } from "@/lib/video/embed";
+import { parseVideoUrl, videoEmbedAutoplaySrc } from "@/lib/video/embed";
 import { videoDomId } from "@/lib/portfolio-nav";
 import type { NavigatorSection } from "@/types/navigator";
 import type { PortfolioProject } from "@/types/content";
@@ -109,10 +109,9 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
           />
         )}
 
-        {playing &&
-          (parsed.provider === "youtube" || parsed.provider === "vimeo") && (
+        {playing && parsed.embedUrl && parsed.provider !== "file" && (
             <iframe
-              src={`${parsed.embedUrl}${parsed.provider === "youtube" ? "&autoplay=1" : "?autoplay=1"}`}
+              src={videoEmbedAutoplaySrc(parsed) ?? parsed.embedUrl}
               title={project.title}
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen

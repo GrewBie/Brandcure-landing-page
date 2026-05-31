@@ -9,6 +9,7 @@ import {
 } from "@/lib/portfolio/preview-media";
 import { serviceTypeToSection } from "@/lib/portfolio-nav";
 import {
+  isIframeVideoProvider,
   parseVideoUrl,
   videoEmbedAutoplaySrc,
 } from "@/lib/video/embed";
@@ -38,6 +39,8 @@ export function PortfolioGridCard({
   const hasVideo = parsed.provider !== "none";
   const thumbnailUrl = getProjectCardThumbnail(project);
   const embedAutoplay = videoEmbedAutoplaySrc(parsed);
+  const showIframe =
+    hover && hasVideo && isIframeVideoProvider(parsed.provider) && embedAutoplay;
 
   const cardTags = [
     project.automationSubtypeLabel ?? project.serviceTypeLabel,
@@ -132,27 +135,31 @@ export function PortfolioGridCard({
             />
           )}
 
-          {hover &&
-            hasVideo &&
-            (parsed.provider === "youtube" || parsed.provider === "vimeo") &&
-            embedAutoplay && (
-              <iframe
-                key={embedAutoplay}
-                src={embedAutoplay}
-                title={project.title}
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 z-10 h-full w-full border-0"
-              />
-            )}
+          {showIframe && (
+            <iframe
+              key={embedAutoplay}
+              src={embedAutoplay}
+              title={project.title}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 z-10 h-full w-full border-0"
+            />
+          )}
 
-          <CardSubtitleOverlay
-            subtitle={project.subtitle}
-            className={cn(
-              "pointer-events-none transition-opacity duration-300",
-              hover ? "opacity-100" : "opacity-0",
-            )}
-          />
+          {hover && hasVideo && project.subtitle.trim() && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[rgba(17,18,20,0.92)] via-[rgba(17,18,20,0.55)] to-transparent px-4 pb-4 pt-12">
+              <p className="line-clamp-3 text-center text-xs font-medium leading-relaxed text-[var(--brand-warm-white)]">
+                {project.subtitle}
+              </p>
+            </div>
+          )}
+
+          {hover && !hasVideo && (
+            <CardSubtitleOverlay
+              subtitle={project.subtitle}
+              className="pointer-events-none opacity-100"
+            />
+          )}
         </div>
 
         <p data-nav-summary className="sr-only">
