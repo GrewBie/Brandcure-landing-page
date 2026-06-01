@@ -1,3 +1,9 @@
+import {
+  cancellableDelay,
+  getAgentActivityGeneration,
+  isActivityCancelledError,
+  isAgentActivityActive,
+} from "@/lib/agent-activity";
 import { browserNav } from "@/lib/browser-navigator";
 import { CONTACT_NAV_EVENT } from "@/lib/portfolio/voice-nav-events";
 
@@ -23,11 +29,10 @@ export function consumeContactFormFocus(): boolean {
   return true;
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
-function waitForContactSection(timeoutMs = 10_000): Promise<HTMLElement | null> {
+function waitForContactSection(
+  timeoutMs = 10_000,
+  workGen?: number,
+): Promise<HTMLElement | null> {
   return new Promise((resolve) => {
     const existing = document.getElementById("contact");
     if (existing) {
@@ -37,6 +42,10 @@ function waitForContactSection(timeoutMs = 10_000): Promise<HTMLElement | null> 
 
     const started = Date.now();
     const tick = () => {
+      if (workGen !== undefined && !isAgentActivityActive(workGen)) {
+        resolve(null);
+        return;
+      }
       const el = document.getElementById("contact");
       if (el) {
         resolve(el);
@@ -77,31 +86,41 @@ function applyContactHighlight(): void {
  */
 export async function runContactHandoffSequence(
   onCloseOverlays?: () => void,
+  workGen: number = getAgentActivityGeneration(),
 ): Promise<void> {
   if (typeof window === "undefined") return;
 
-  onCloseOverlays?.();
-  markContactFormFocus();
-  browserNav.clearHighlight();
+  try {
+    onCloseOverlays?.();
+    markContactFormFocus();
+    browserNav.clearHighlight();
 
-  let section = document.getElementById("contact");
-  if (!section) {
-    window.dispatchEvent(new CustomEvent(CONTACT_NAV_EVENT));
-    section = await waitForContactSection();
-  }
+    if (!isAgentActivityActive(workGen)) return;
 
-  if (section) {
-    if (window.location.pathname !== "/") {
-      await delay(400);
+    let section = document.getElementById("contact");
+    if (!section) {
+      window.dispatchEvent(new CustomEvent(CONTACT_NAV_EVENT));
+      section = await waitForContactSection(10_000, workGen);
     }
-    scrollContactSection(section);
-    await delay(SCROLL_SETTLE_MS);
-    applyContactHighlight();
-    await delay(SPOTLIGHT_SETTLE_MS);
-    return;
-  }
 
-  window.dispatchEvent(new CustomEvent(CONTACT_NAV_EVENT));
+    if (!isAgentActivityActive(workGen)) return;
+
+    if (section) {
+      if (window.location.pathname !== "/") {
+        await cancellableDelay(400, workGen);
+      }
+      scrollContactSection(section);
+      await cancellableDelay(SCROLL_SETTLE_MS, workGen);
+      if (!isAgentActivityActive(workGen)) return;
+      applyContactHighlight();
+      await cancellableDelay(SPOTLIGHT_SETTLE_MS, workGen);
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent(CONTACT_NAV_EVENT));
+  } catch (error) {
+    if (!isActivityCancelledError(error)) throw error;
+  }
 }
 
 /** @deprecated Prefer runContactHandoffSequence for ordered highlight → greet. */

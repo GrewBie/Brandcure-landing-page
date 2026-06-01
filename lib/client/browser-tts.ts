@@ -1,5 +1,10 @@
 "use client";
 
+export function cancelBrowserTts(): void {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+}
+
 /** Browser speech when ElevenLabs is unavailable or fails. */
 export function speakWithBrowserTts(text: string): Promise<void> {
   const trimmed = text.trim();
@@ -8,7 +13,7 @@ export function speakWithBrowserTts(text: string): Promise<void> {
   }
 
   return new Promise((resolve) => {
-    window.speechSynthesis.cancel();
+    cancelBrowserTts();
     const utterance = new SpeechSynthesisUtterance(trimmed);
     utterance.lang = "en-IN";
     utterance.rate = 1;

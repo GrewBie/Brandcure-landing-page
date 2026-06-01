@@ -27,6 +27,14 @@ import type {
   NavigatorCommand,
   NavigatorSection,
 } from "@/types/navigator";
+import {
+  cancelAgentPresentation,
+  cancelAllAgentActivity,
+  getAgentAbortSignal,
+  getAgentActivityGeneration,
+  isActivityCancelledError,
+  isAgentActivityActive,
+} from "@/lib/agent-activity";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type VoiceState =
@@ -289,12 +297,14 @@ export function useVoiceNavigator({
   );
 
   const speak = useCallback(
-    async (text: string) => {
+    async (text: string, workGen: number) => {
+      if (!isAgentActivityActive(workGen) || !inCallRef.current) return;
       listeningPausedRef.current = true;
       pauseListening();
       stopAudio();
       try {
-        await playElevenLabsSpeech(text);
+        await playElevenLabsSpeech(text, { signal: getAgentAbortSignal() });
+        if (!isAgentActivityActive(workGen) || !inCallRef.current) return;
         await new Promise((resolve) => setTimeout(resolve, 600));
       } finally {
         listeningPausedRef.current = false;
@@ -305,14 +315,20 @@ export function useVoiceNavigator({
 
   const speakOutbound = useCallback(
     async (text: string) => {
+      const workGen = getAgentActivityGeneration();
       listeningPausedRef.current = true;
       pauseListening();
       stopAudio();
       try {
-        await playElevenLabsSpeech(text);
+        await playElevenLabsSpeech(text, { signal: getAgentAbortSignal() });
+        if (!isAgentActivityActive(workGen)) return;
         await new Promise((resolve) => setTimeout(resolve, 600));
       } finally {
         listeningPausedRef.current = false;
+        if (!isAgentActivityActive(workGen)) {
+          setVoiceState("idle");
+          return;
+        }
         if (inCallRef.current) resumeCallAfterTts();
         else setVoiceState("idle");
       }
@@ -398,6 +414,9 @@ export function useVoiceNavigator({
         return;
       }
 
+      cancelAgentPresentation();
+      const workGen = getAgentActivityGeneration();
+
       processingRef.current = true;
       pauseListening();
       utteranceBufferRef.current = "";
@@ -430,6 +449,11 @@ export function useVoiceNavigator({
           catalogRef.current,
           sessionRef.current,
         );
+      }
+
+      if (!isAgentActivityActive(workGen) || !inCallRef.current) {
+        processingRef.current = false;
+        return;
       }
 
       const catalogItem = command.navId
@@ -495,11 +519,17 @@ export function useVoiceNavigator({
       recordTurn("assistant", command.speech, "voice");
 
       const runNav = async () => {
+        if (!isAgentActivityActive(workGen)) return;
         if (SYNC_ONLY_COMMANDS.has(command.command)) {
           executeCommand(command);
         } else {
-          await executeVoiceNavCommand(catalogRef.current, command);
+          await executeVoiceNavCommand(
+            catalogRef.current,
+            command,
+            workGen,
+          );
         }
+        if (!isAgentActivityActive(workGen)) return;
         if (command.section) sectionRef.current = command.section;
         if (command.navId) {
           indexRef.current = browserNav.getItemIndex(command.navId);
@@ -508,10 +538,13 @@ export function useVoiceNavigator({
       };
 
       const speakHandoff = async () => {
+        if (!isAgentActivityActive(workGen) || !inCallRef.current) return;
         try {
-          await speak(command.speech);
+          await speak(command.speech, workGen);
         } catch (err) {
+          if (isActivityCancelledError(err)) return;
           console.error("[voice] speak failed:", err);
+          if (!isAgentActivityActive(workGen) || !inCallRef.current) return;
           await speakWithBrowserTts(command.speech);
         }
       };
@@ -519,7 +552,8 @@ export function useVoiceNavigator({
       try {
         if (contactHandoff) {
           onSteerToContact?.();
-          await runContactHandoffSequence();
+          await runContactHandoffSequence(undefined, workGen);
+          if (!isAgentActivityActive(workGen)) return;
           await speakHandoff();
         } else if (websiteShowcase) {
           await runNav();
@@ -527,30 +561,58 @@ export function useVoiceNavigator({
         } else {
           await Promise.all([speakHandoff(), runNav()]);
         }
+      } catch (error) {
+        if (!isActivityCancelledError(error)) {
+          console.error("[voice] turn failed:", error);
+        }
       } finally {
         const curated = curatedTourRef.current;
         curatedTourRef.current = null;
 
+        const stillActive =
+          isAgentActivityActive(workGen) && inCallRef.current;
+
         if (
+          stillActive &&
           curated?.length &&
           command.command === "speak_only" &&
           !contactHandoff
         ) {
-          await runGuidedPortfolioTour(catalogRef.current, curated, {
-            speak: async (text) => {
-              try {
-                await speak(text);
-              } catch {
-                await speakWithBrowserTts(text);
-              }
-            },
-            recordTurn,
-            getSession: () => sessionRef.current,
-          });
+          try {
+            await runGuidedPortfolioTour(catalogRef.current, curated, {
+              speak: async (text) => {
+                if (!isAgentActivityActive(workGen) || !inCallRef.current) {
+                  return;
+                }
+                try {
+                  await speak(text, workGen);
+                } catch (err) {
+                  if (isActivityCancelledError(err)) return;
+                  if (!isAgentActivityActive(workGen) || !inCallRef.current) {
+                    return;
+                  }
+                  await speakWithBrowserTts(text);
+                }
+              },
+              recordTurn,
+              getSession: () => sessionRef.current,
+              workGen,
+            });
+          } catch (error) {
+            if (!isActivityCancelledError(error)) {
+              console.error("[voice] curated tour failed:", error);
+            }
+          }
         }
 
         processingRef.current = false;
         listeningPausedRef.current = false;
+
+        if (!isAgentActivityActive(workGen) || !inCallRef.current) {
+          setVoiceState("idle");
+          return;
+        }
+
         if (contactHandoff) {
           endCallRef.current();
         } else {
@@ -692,6 +754,8 @@ export function useVoiceNavigator({
   }, [stopAudio, setVoiceState]);
 
   const endCall = useCallback(() => {
+    cancelAllAgentActivity();
+    curatedTourRef.current = null;
     inCallRef.current = false;
     setInCall(false);
     listeningPausedRef.current = false;
@@ -747,6 +811,7 @@ export function useVoiceNavigator({
 
   useEffect(() => {
     return () => {
+      cancelAllAgentActivity();
       inCallRef.current = false;
       clearSilenceTimer();
       clearRestartTimer();

@@ -281,6 +281,26 @@ class BrowserNavigator {
     video?.pause();
   }
 
+  pauseAllVideos(): void {
+    if (!this.isBrowser()) return;
+    for (const navId of this.players.keys()) {
+      this.pauseVideo(navId);
+    }
+    document.querySelectorAll("video").forEach((v) => {
+      try {
+        v.pause();
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+
+  /** Clear spotlight, timers, and stop any playing portfolio videos. */
+  resetAgentPresentation(): void {
+    this.clearHighlight();
+    this.pauseAllVideos();
+  }
+
   private sectionItems(section: NavigatorSection): HTMLElement[] {
     if (!this.isBrowser()) return [];
     const root = this.sectionEl(section);

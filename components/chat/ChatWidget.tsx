@@ -32,6 +32,11 @@ import {
   CONTACT_CLOSING_SPEECH,
   runContactHandoffSequence,
 } from "@/lib/contact-capture";
+import {
+  cancelAgentPresentation,
+  getAgentActivityGeneration,
+  isAgentActivityActive,
+} from "@/lib/agent-activity";
 import { speakWithBrowserTts } from "@/lib/client/browser-tts";
 import { cn } from "@/lib/cn";
 import {
@@ -112,7 +117,9 @@ export function ChatWidget() {
   });
 
   const steerToContactForm = useCallback(() => {
-    void runContactHandoffSequence(closeChatOverlays).then(async () => {
+    const workGen = getAgentActivityGeneration();
+    void runContactHandoffSequence(closeChatOverlays, workGen).then(async () => {
+      if (!isAgentActivityActive(workGen)) return;
       if (inCall) endCall();
       else await speakWithBrowserTts(CONTACT_CLOSING_SPEECH);
     });
@@ -290,6 +297,8 @@ export function ChatWidget() {
 
     if (inCall) endCall();
 
+    const workGen = cancelAgentPresentation();
+
     recordTurn("user", text, "chat");
     const userPatch = patchFromUserText(text);
     patchSession(userPatch);
@@ -362,12 +371,14 @@ export function ChatWidget() {
         ["highlight", "play_video", "summarize_card"].includes(a.type),
       );
 
-      if (plan) {
+      if (plan && isAgentActivityActive(workGen)) {
         patchSession(plan.sessionPatch);
         setCuratedPicks(plan.picks);
         if (!aiShowedPortfolio) {
           requestAnimationFrame(() => {
-            runCuratedPortfolioTour(catalogRef.current, plan.picks);
+            if (isAgentActivityActive(workGen)) {
+              runCuratedPortfolioTour(catalogRef.current, plan.picks, workGen);
+            }
           });
         }
       }
@@ -378,6 +389,7 @@ export function ChatWidget() {
         raw,
       ].join(" ");
       requestAnimationFrame(() => {
+        if (!isAgentActivityActive(workGen)) return;
         actions.forEach((a) => runAction(a, conversationText));
       });
     } catch {
@@ -414,11 +426,13 @@ export function ChatWidget() {
         { ...baseSession, ...fallback.stateUpdate },
         fullMessages,
       );
-      if (plan) {
+      if (plan && isAgentActivityActive(workGen)) {
         patchSession(plan.sessionPatch);
         setCuratedPicks(plan.picks);
         requestAnimationFrame(() => {
-          runCuratedPortfolioTour(catalogRef.current, plan.picks);
+          if (isAgentActivityActive(workGen)) {
+            runCuratedPortfolioTour(catalogRef.current, plan.picks, workGen);
+          }
         });
       }
     }
@@ -428,12 +442,18 @@ export function ChatWidget() {
   const toggleVoiceCall = () => {
     setBadge(false);
     if (!portfolioMobileVoice) setOpen(true);
-    if (inCall) endCall();
-    else startCall();
+    if (inCall) {
+      endCall();
+      setCuratedPicks([]);
+      setSuggestion(null);
+    } else startCall();
   };
 
   const closeChat = () => {
     if (inCall) endCall();
+    else cancelAgentPresentation();
+    setCuratedPicks([]);
+    setSuggestion(null);
     setOpen(false);
     setShowMobileTextChat(false);
   };

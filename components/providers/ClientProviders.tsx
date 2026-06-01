@@ -16,6 +16,7 @@ import type { ReactNode } from "react";
 export function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
+      <ScrollProvider>
       <NavCatalogProvider>
         <PortfolioExperienceProvider>
           <PortfolioNavBridge />

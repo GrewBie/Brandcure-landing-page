@@ -1,3 +1,9 @@
+import {
+  cancellableDelay,
+  getAgentActivityGeneration,
+  isActivityCancelledError,
+  isAgentActivityActive,
+} from "@/lib/agent-activity";
 import { browserNav } from "@/lib/browser-navigator";
 import { isOnPortfolioPage, goToPortfolioPage } from "@/lib/agent-tour";
 import {
@@ -20,16 +26,10 @@ const HIGHLIGHT_DWELL_MS = 1_600;
 const STEP_GAP_MS = 400;
 const PORTFOLIO_PLAY_DELAY = 700;
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
-function waitForHighlight(navId: string): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(() => {
-      browserNav.highlightItem(navId);
-      resolve();
-    }, 450);
+function waitForHighlight(navId: string, workGen: number): Promise<void> {
+  return cancellableDelay(450, workGen).then(() => {
+    if (!isAgentActivityActive(workGen)) return;
+    browserNav.highlightItem(navId);
   });
 }
 
@@ -37,9 +37,10 @@ function waitForHighlight(navId: string): Promise<void> {
 export async function showcaseWebsiteProject(
   catalog: NavItem[],
   navId: string,
+  workGen: number = getAgentActivityGeneration(),
 ): Promise<void> {
   const item = catalog.find((i) => i.navId === navId);
-  if (!item) return;
+  if (!item || !isAgentActivityActive(workGen)) return;
 
   const detailPath = `/portfolio/${navId}`;
   if (window.location.pathname === detailPath) {
@@ -51,23 +52,29 @@ export async function showcaseWebsiteProject(
   }
 
   const runHighlight = async () => {
-    if (isOnPortfolioPage() || hasItemInDom(navId)) {
-      if (isOnPortfolioPage()) {
-        browserNav.scrollToSection(item.navSection);
-        await delay(STEP_GAP_MS);
-        browserNav.scrollToItem(navId);
-      } else {
-        summarizePortfolioItem(catalog, navId);
-        await delay(600);
+    try {
+      if (isOnPortfolioPage() || hasItemInDom(navId)) {
+        if (isOnPortfolioPage()) {
+          browserNav.scrollToSection(item.navSection);
+          await cancellableDelay(STEP_GAP_MS, workGen);
+          browserNav.scrollToItem(navId);
+        } else {
+          summarizePortfolioItem(catalog, navId);
+          await cancellableDelay(600, workGen);
+        }
+        await waitForHighlight(navId, workGen);
+        if (!isAgentActivityActive(workGen)) return;
+        browserNav.emphasizeItemSummary(navId);
+        await cancellableDelay(HIGHLIGHT_DWELL_MS, workGen);
+        dismissPortfolioSpotlight();
+        await cancellableDelay(STEP_GAP_MS, workGen);
       }
-      await waitForHighlight(navId);
-      browserNav.emphasizeItemSummary(navId);
-      await delay(HIGHLIGHT_DWELL_MS);
-      dismissPortfolioSpotlight();
-      await delay(STEP_GAP_MS);
+      if (!isAgentActivityActive(workGen)) return;
+      markScrollLivePreview();
+      dispatchVoiceNav({ type: "open_detail", navId, scrollLivePreview: true });
+    } catch (error) {
+      if (!isActivityCancelledError(error)) throw error;
     }
-    markScrollLivePreview();
-    dispatchVoiceNav({ type: "open_detail", navId, scrollLivePreview: true });
   };
 
   if (!isOnPortfolioPage() && !hasItemInDom(navId)) {
@@ -82,7 +89,10 @@ export async function showcaseWebsiteProject(
 export async function executeVoiceNavCommand(
   catalog: NavItem[],
   command: NavigatorCommand,
+  workGen: number = getAgentActivityGeneration(),
 ): Promise<void> {
+  if (!isAgentActivityActive(workGen)) return;
+
   const item = command.navId
     ? catalog.find((i) => i.navId === command.navId)
     : undefined;
@@ -94,7 +104,9 @@ export async function executeVoiceNavCommand(
       item &&
       (item.navSection === "websites" || item.websiteUrl))
   ) {
-    if (command.navId) await showcaseWebsiteProject(catalog, command.navId);
+    if (command.navId) {
+      await showcaseWebsiteProject(catalog, command.navId, workGen);
+    }
     return;
   }
 
@@ -110,19 +122,19 @@ export async function executeVoiceNavCommand(
 
   if (command.command === "highlight" && command.navId) {
     focusPortfolioItem(catalog, command.navId, false);
-    await waitForHighlight(command.navId);
+    await waitForHighlight(command.navId, workGen);
     return;
   }
 
   if (command.command === "summarize_card" && command.navId) {
     summarizePortfolioItem(catalog, command.navId);
-    await delay(500);
+    await cancellableDelay(500, workGen);
     return;
   }
 
   if (command.command === "play_video" && command.navId) {
     focusPortfolioItem(catalog, command.navId, true);
-    await delay(PORTFOLIO_PLAY_DELAY);
+    await cancellableDelay(PORTFOLIO_PLAY_DELAY, workGen);
     return;
   }
 

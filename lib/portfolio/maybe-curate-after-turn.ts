@@ -58,8 +58,9 @@ export function planCuratedPortfolioTour(
 export function runCuratedPortfolioTour(
   catalog: NavItem[],
   picks: NavItem[],
+  workGen?: number,
 ): void {
-  void presentCuratedPortfolioTour(catalog, picks);
+  void presentCuratedPortfolioTour(catalog, picks, workGen);
 }
 
 /** Voice: narrate each pick, then advance to the next. */

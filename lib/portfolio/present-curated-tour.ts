@@ -1,3 +1,9 @@
+import {
+  cancellableDelay,
+  getAgentActivityGeneration,
+  isActivityCancelledError,
+  isAgentActivityActive,
+} from "@/lib/agent-activity";
 import { browserNav } from "@/lib/browser-navigator";
 import { isOnPortfolioPage } from "@/lib/agent-tour";
 import {
@@ -14,10 +20,6 @@ const BETWEEN_MS = 600;
 const LIVE_SITE_PAINT_MS = 1_100;
 const CARD_DWELL_MS = 5_500;
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
 let tourRunning = false;
 
 export function isCuratedTourRunning(): boolean {
@@ -32,6 +34,8 @@ export type GuidedTourDeps = {
     channel: "voice",
   ) => void;
   getSession: () => AgentSessionState;
+  /** Generation from cancelAgentPresentation — tour exits when stale. */
+  workGen?: number;
 };
 
 /**
@@ -43,21 +47,24 @@ export async function runGuidedPortfolioTour(
   deps: GuidedTourDeps,
 ): Promise<void> {
   if (items.length === 0 || tourRunning) return;
+  const workGen = deps.workGen ?? getAgentActivityGeneration();
   tourRunning = true;
 
   try {
     if (!isOnPortfolioPage()) {
       openPortfolioForTour();
-      await delay(900);
+      await cancellableDelay(900, workGen);
     }
 
     const primarySection = items[0]?.navSection;
     if (primarySection) {
       browserNav.scrollToSection(primarySection);
-      await delay(BETWEEN_MS);
+      await cancellableDelay(BETWEEN_MS, workGen);
     }
 
     for (let i = 0; i < items.length; i++) {
+      if (!isAgentActivityActive(workGen)) break;
+
       const item = items[i]!;
       const session = deps.getSession();
       const speech = buildProjectNarration(item, session);
@@ -65,24 +72,31 @@ export async function runGuidedPortfolioTour(
       deps.recordTurn("assistant", speech, "voice");
 
       if (item.navSection === "websites" && item.websiteUrl) {
-        await showcaseWebsiteProject(catalog, item.navId);
-        await delay(LIVE_SITE_PAINT_MS);
+        await showcaseWebsiteProject(catalog, item.navId, workGen);
+        await cancellableDelay(LIVE_SITE_PAINT_MS, workGen);
       } else {
         summarizePortfolioItem(catalog, item.navId);
         if (item.videoUrl) {
-          await delay(800);
+          await cancellableDelay(800, workGen);
+          if (!isAgentActivityActive(workGen)) break;
           browserNav.playVideo(item.navId);
         }
-        await delay(500);
+        await cancellableDelay(500, workGen);
       }
+
+      if (!isAgentActivityActive(workGen)) break;
 
       await deps.speak(speech);
 
+      if (!isAgentActivityActive(workGen)) break;
+
       if (i < items.length - 1) {
         dismissPortfolioSpotlight();
-        await delay(BETWEEN_MS);
+        await cancellableDelay(BETWEEN_MS, workGen);
       }
     }
+  } catch (error) {
+    if (!isActivityCancelledError(error)) throw error;
   } finally {
     tourRunning = false;
   }
@@ -94,41 +108,50 @@ export async function runGuidedPortfolioTour(
 export async function presentCuratedPortfolioTour(
   catalog: NavItem[],
   items: NavItem[],
+  workGen?: number,
 ): Promise<void> {
   if (items.length === 0 || tourRunning) return;
+  const gen = workGen ?? getAgentActivityGeneration();
   tourRunning = true;
 
   try {
     if (!isOnPortfolioPage()) {
       openPortfolioForTour();
-      await delay(900);
+      await cancellableDelay(900, gen);
     }
 
     const primarySection = items[0]?.navSection;
     if (primarySection) {
       browserNav.scrollToSection(primarySection);
-      await delay(BETWEEN_MS);
+      await cancellableDelay(BETWEEN_MS, gen);
     }
 
     for (let i = 0; i < items.length; i++) {
+      if (!isAgentActivityActive(gen)) break;
+
       const item = items[i]!;
 
       if (item.navSection === "websites" && item.websiteUrl) {
-        await showcaseWebsiteProject(catalog, item.navId);
+        await showcaseWebsiteProject(catalog, item.navId, gen);
       } else {
         summarizePortfolioItem(catalog, item.navId);
         if (item.videoUrl) {
-          await delay(800);
+          await cancellableDelay(800, gen);
+          if (!isAgentActivityActive(gen)) break;
           browserNav.playVideo(item.navId);
         }
       }
 
+      if (!isAgentActivityActive(gen)) break;
+
       if (i < items.length - 1) {
-        await delay(CARD_DWELL_MS);
+        await cancellableDelay(CARD_DWELL_MS, gen);
         dismissPortfolioSpotlight();
-        await delay(BETWEEN_MS);
+        await cancellableDelay(BETWEEN_MS, gen);
       }
     }
+  } catch (error) {
+    if (!isActivityCancelledError(error)) throw error;
   } finally {
     tourRunning = false;
   }
