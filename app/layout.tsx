@@ -4,8 +4,8 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { ClientProviders } from "@/components/providers/ClientProviders";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/json-ld";
+import { SchemaHead } from "@/components/seo/SchemaHead";
+import { globalSchemaGraph } from "@/lib/seo/schema";
 import { rootMetadata } from "@/lib/seo/metadata";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -38,9 +38,11 @@ export default function RootLayout({
       className={`${cormorant.variable} ${dmSans.variable} h-full transition-colors duration-700 ease-in-out`}
       suppressHydrationWarning
     >
+      <head>
+        <SchemaHead data={globalSchemaGraph()} />
+      </head>
       <body className="flex min-h-full flex-col antialiased">
         <SiteAnalytics />
-        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <ClientProviders>
           <ScrollProgress />
           <Nav />

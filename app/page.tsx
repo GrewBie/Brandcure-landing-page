@@ -7,10 +7,8 @@ import { Portfolio } from "@/components/sections/Portfolio";
 import { Process } from "@/components/sections/Process";
 import { Services } from "@/components/sections/Services";
 import { WhyBrandCure } from "@/components/sections/WhyBrandCure";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { pickMixedHomePortfolioPreview } from "@/lib/portfolio/home-preview";
 import { resolveHomePortfolioProjects } from "@/lib/portfolio/resolve-portfolio-projects";
-import { homePageJsonLdGraph } from "@/lib/seo/json-ld";
 import {
   HOME_META_DESCRIPTION,
   HOME_META_TITLE,
@@ -33,7 +31,6 @@ export default async function Home() {
 
   return (
     <>
-      <JsonLd data={homePageJsonLdGraph()} />
       <Hero />
       <Services />
       <Marquee />

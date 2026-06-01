@@ -22,10 +22,17 @@ type CreateMetadataOptions = {
   keywords?: string[];
 };
 
+const DEFAULT_OG_IMAGE = "/og-card.png";
+
 function resolveImageUrl(image?: string): string {
-  if (!image) return `${SITE_URL}/brandcure-bc.svg`;
+  if (!image) return `${SITE_URL}${DEFAULT_OG_IMAGE}`;
   if (image.startsWith("http")) return image;
   return `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`;
+}
+
+function normalizePath(path: string): string {
+  if (!path || path === "/") return "/";
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 /** Shared Next.js Metadata for pages — canonical, Open Graph, Twitter, robots. */
@@ -43,7 +50,8 @@ export function createMetadata(options: CreateMetadataOptions): Metadata {
     keywords = [...DEFAULT_KEYWORDS],
   } = options;
 
-  const url = `${SITE_URL}${path}`;
+  const canonicalPath = normalizePath(path);
+  const url = `${SITE_URL}${canonicalPath === "/" ? "/" : canonicalPath}`;
   const ogImage = resolveImageUrl(image);
 
   return {
@@ -74,6 +82,7 @@ export function createMetadata(options: CreateMetadataOptions): Metadata {
           alt: imageAlt,
           width: 1200,
           height: 630,
+          type: "image/png",
         },
       ],
     },
@@ -93,6 +102,14 @@ export const rootMetadata: Metadata = {
   ...(googleSiteVerification
     ? { verification: { google: googleSiteVerification } }
     : {}),
+  other: {
+    "geo.region": "IN-TN",
+    "geo.placename": "Chennai",
+    "geo.position": "13.0827;80.2707",
+    ICBM: "13.0827, 80.2707",
+    language: "en-IN",
+    "DC.language": "en-IN",
+  },
   title: {
     default: HOME_META_TITLE,
     template: `%s`,
@@ -124,7 +141,15 @@ export const rootMetadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} | Your AI-native digital partner`,
     description: DEFAULT_DESCRIPTION,
-    images: [{ url: "/brandcure-bc.svg", alt: SITE_NAME }],
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -133,11 +158,11 @@ export const rootMetadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    shortcut: "/favicon.ico",
-    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon-48.png",
+    apple: [{ url: "/logo-512.png", sizes: "180x180", type: "image/png" }],
   },
 };
