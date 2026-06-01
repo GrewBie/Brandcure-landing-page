@@ -85,8 +85,13 @@ export function createMetadata(options: CreateMetadataOptions): Metadata {
   };
 }
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+
 export const rootMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  ...(googleSiteVerification
+    ? { verification: { google: googleSiteVerification } }
+    : {}),
   title: {
     default: `${SITE_NAME} | AI-First Website, Marketing & Automation`,
     template: `%s`,
@@ -103,8 +108,8 @@ export const rootMetadata: Metadata = {
     telephone: true,
   },
   alternates: {
-    canonical: SITE_URL,
-    languages: { "en-IN": SITE_URL },
+    canonical: `${SITE_URL}/`,
+    languages: { "en-IN": `${SITE_URL}/` },
   },
   robots: {
     index: true,
@@ -114,7 +119,7 @@ export const rootMetadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: SITE_URL,
+    url: `${SITE_URL}/`,
     siteName: SITE_NAME,
     title: `${SITE_NAME} | Cure your brand. 3× faster.`,
     description: DEFAULT_DESCRIPTION,

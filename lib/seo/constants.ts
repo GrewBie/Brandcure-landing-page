@@ -1,6 +1,25 @@
-const DEFAULT_SITE_URL = "https://brandcure.in";
+/** Production canonical host (apex 307s to www on Vercel). */
+const DEFAULT_SITE_URL = "https://www.brandcure.in";
 
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-links";
+
+/** Apex domains that must canonicalize to www in production. */
+const APEX_TO_WWW: Record<string, string> = {
+  "brandcure.in": "https://www.brandcure.in",
+};
+
+function normalizeCanonicalOrigin(origin: string): string {
+  try {
+    const { hostname, protocol } = new URL(origin);
+    if (protocol !== "https:" && protocol !== "http:") return DEFAULT_SITE_URL;
+    const canonical = APEX_TO_WWW[hostname];
+    if (canonical) return canonical;
+    if (hostname.startsWith("www.")) return origin;
+    return origin;
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
 
 /** Canonical site URL — set NEXT_PUBLIC_SITE_URL in Vercel (with https://). */
 export function resolveSiteUrl(): string {
@@ -8,7 +27,7 @@ export function resolveSiteUrl(): string {
   if (!raw) return DEFAULT_SITE_URL;
   try {
     const href = raw.startsWith("http") ? raw : `https://${raw}`;
-    return new URL(href).origin;
+    return normalizeCanonicalOrigin(new URL(href).origin);
   } catch {
     return DEFAULT_SITE_URL;
   }

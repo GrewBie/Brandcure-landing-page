@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     revalidateTag("portfolio", { expire: 0 });
     revalidatePath("/");
     revalidatePath("/portfolio");
+    revalidatePath("/sitemap.xml");
     if (slug) {
       revalidatePath(`/portfolio/${slug}`);
     }
@@ -43,6 +44,8 @@ export async function POST(request: NextRequest) {
   if (!type || type === "blogPost") {
     revalidateTag("blog", { expire: 0 });
     revalidatePath("/");
+    revalidatePath("/blog");
+    revalidatePath("/sitemap.xml");
     if (slug) {
       revalidatePath(`/blog/${slug}`);
     }
