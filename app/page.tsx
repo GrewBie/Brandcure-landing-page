@@ -11,13 +11,13 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pickMixedHomePortfolioPreview } from "@/lib/portfolio/home-preview";
 import { resolveHomePortfolioProjects } from "@/lib/portfolio/resolve-portfolio-projects";
 import { homePageJsonLdGraph } from "@/lib/seo/json-ld";
+import { HOME_META_DESCRIPTION } from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import { getBlogPosts } from "@/lib/sanity/fetch";
 
 export const metadata = createMetadata({
   title: "BrandCure | AI-First Website, Marketing & Automation Agency",
-  description:
-    "Chennai-based AI-first agency: websites, AI marketing, WhatsApp automation, e-commerce growth, and video creatives. Free digital audit. Flexible scope for SMBs and startups.",
+  description: HOME_META_DESCRIPTION,
   path: "/",
 });
 

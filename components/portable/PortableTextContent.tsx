@@ -71,7 +71,11 @@ const components: PortableTextComponents = {
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg">
             <Image
               src={src}
-              alt={image.alt ?? ""}
+              alt={
+                image.alt?.trim() ||
+                (typeof image.caption === "string" && image.caption.trim()) ||
+                "Illustration in article"
+              }
               fill
               className="object-cover"
               sizes="(max-width: 900px) 100vw, 900px"

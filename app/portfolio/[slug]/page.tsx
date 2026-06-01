@@ -16,6 +16,7 @@ import {
   breadcrumbJsonLd,
   creativeWorkJsonLd,
 } from "@/lib/seo/json-ld";
+import { metaDescription } from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import type { Metadata } from "next";
 
@@ -31,13 +32,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getPortfolioBySlug(slug);
   if (!project) return { title: "Project not found" };
   const displayTitle = portfolioDisplayTitle(project.title);
+  const rawDescription =
+    project.websiteDetails ||
+    project.adDescription ||
+    project.resultDetail ||
+    project.subtitle;
+
   return createMetadata({
     title: `${displayTitle} | BrandCure Portfolio`,
-    description:
-      project.websiteDetails ||
-      project.adDescription ||
-      project.resultDetail ||
-      project.subtitle,
+    description: metaDescription(
+      `${displayTitle} — ${rawDescription} Case study by BrandCure, Chennai.`,
+    ),
     path: `/portfolio/${slug}`,
     image: project.heroImageUrl,
     imageAlt: displayTitle,

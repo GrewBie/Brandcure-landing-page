@@ -8,6 +8,7 @@ import {
   getProjectPreviewVideoUrl,
 } from "@/lib/portfolio/preview-media";
 import { serviceTypeToSection } from "@/lib/portfolio-nav";
+import { portfolioDisplayTitle } from "@/lib/portfolio/display-copy";
 import {
   isIframeVideoProvider,
   parseVideoUrl,
@@ -44,6 +45,9 @@ export function PortfolioGridCard({
         ? embedAutoplay
         : parsed.embedUrl
       : undefined;
+
+  const displayTitle = portfolioDisplayTitle(project.title);
+  const imageAlt = `${displayTitle} — ${project.serviceTypeLabel} case study preview`;
 
   const cardTags = [
     project.automationSubtypeLabel ?? project.serviceTypeLabel,
@@ -146,7 +150,7 @@ export function PortfolioGridCard({
             <Image
               data-card-thumb
               src={getProjectCardThumbnail(project)}
-              alt=""
+              alt={imageAlt}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-300 ease-out will-change-transform"

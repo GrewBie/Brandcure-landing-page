@@ -1,6 +1,7 @@
 /** Production canonical host (apex 307s to www on Vercel). */
 const DEFAULT_SITE_URL = "https://www.brandcure.in";
 
+import { HOME_META_DESCRIPTION } from "@/lib/seo/descriptions";
 import { SOCIAL_PROFILE_URLS } from "@/lib/social-links";
 
 /** Apex domains that must canonicalize to www in production. */
@@ -39,8 +40,8 @@ export const SITE_NAME = "BrandCure";
 
 export const SITE_TAGLINE = "AI-first growth partner";
 
-export const DEFAULT_DESCRIPTION =
-  "BrandCure builds websites, AI marketing, business automation, and video creatives for Indian SMBs and growing brands. Based in Chennai. Flexible scope, fast delivery, free digital audit.";
+/** Default meta description (home + sitewide fallback). */
+export const DEFAULT_DESCRIPTION = HOME_META_DESCRIPTION;
 
 export const DEFAULT_KEYWORDS = [
   "AI marketing agency India",

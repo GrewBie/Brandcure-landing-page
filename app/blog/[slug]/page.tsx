@@ -9,6 +9,7 @@ import {
   blogPostingJsonLd,
   breadcrumbJsonLd,
 } from "@/lib/seo/json-ld";
+import { metaDescription } from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import type { Metadata } from "next";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post not found" };
   return createMetadata({
     title: `${post.title} | BrandCure`,
-    description: post.excerpt,
+    description: metaDescription(post.excerpt),
     path: `/blog/${slug}`,
     image: post.coverImageUrl,
     imageAlt: post.title,

@@ -1,3 +1,4 @@
+import { HOME_META_DESCRIPTION } from "@/lib/seo/descriptions";
 import { BRANDCURE_FAQ } from "@/lib/seo/faq";
 import {
   ORGANIZATION,
@@ -149,8 +150,7 @@ export function homePageJsonLdGraph(): JsonLd {
       faqPageJsonLd(),
       webPageJsonLd({
         name: `${SITE_NAME} — Home`,
-        description:
-          "AI-first website, marketing, automation, and video creatives for growing brands.",
+        description: HOME_META_DESCRIPTION,
         path: "/",
       }),
     ],

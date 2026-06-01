@@ -38,7 +38,7 @@ export function CuratedPicksBar({
               {item.posterUrl && (
                 <Image
                   src={item.posterUrl}
-                  alt=""
+                  alt={`${item.title} case study thumbnail`}
                   fill
                   sizes="64px"
                   className="object-cover"

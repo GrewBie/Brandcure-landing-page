@@ -37,7 +37,7 @@ export function BlogCard({
             {isNew && <NewBadge />}
             <Image
               src={post.coverImageUrl}
-              alt=""
+              alt={`Cover image for ${post.title}`}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover transition-transform duration-500"
@@ -66,7 +66,7 @@ export function BlogCard({
             {isNew && <NewBadge />}
             <Image
               src={post.coverImageUrl}
-              alt=""
+              alt={`Cover image for ${post.title}`}
               fill
               sizes="280px"
               className="object-cover transition-transform duration-500"
@@ -109,7 +109,7 @@ export function BlogCard({
           {isNew && <NewBadge />}
           <Image
             src={post.coverImageUrl}
-            alt=""
+            alt={`Cover image for ${post.title}`}
             fill
             sizes="(max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-500"

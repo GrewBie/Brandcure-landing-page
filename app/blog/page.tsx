@@ -3,13 +3,13 @@ import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import { getBlogPosts } from "@/lib/sanity/fetch";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo/json-ld";
+import { BLOG_INDEX_META_DESCRIPTION } from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 
 export const metadata = createMetadata({
   title: "Insights & Articles | BrandCure",
-  description:
-    "AI marketing, automation, and growth insights for Indian SMBs, startups, and growing brands.",
+  description: BLOG_INDEX_META_DESCRIPTION,
   path: "/blog",
 });
 
@@ -22,7 +22,7 @@ export default async function BlogIndexPage() {
         data={[
           webPageJsonLd({
             name: "BrandCure Blog",
-            description: "AI marketing, automation, and growth insights.",
+            description: BLOG_INDEX_META_DESCRIPTION,
             path: "/blog",
           }),
           breadcrumbJsonLd([
