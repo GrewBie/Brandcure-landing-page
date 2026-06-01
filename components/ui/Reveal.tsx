@@ -1,11 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { motion, useInView } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
-const ease = [0.25, 0.46, 0.45, 0.94] as const;
-
+/** CSS-only reveal — avoids framer-motion on the critical path. */
 export function Reveal({
   children,
   className,
@@ -17,19 +24,38 @@ export function Reveal({
   delay?: number;
   y?: number;
 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.1 });
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={cn(className)}
-      initial={{ opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration: 0.75, ease, delay }}
+      className={cn("reveal", visible && "reveal--visible", className)}
+      style={
+        {
+          "--reveal-delay": `${delay}s`,
+          "--reveal-y": `${y}px`,
+        } as React.CSSProperties
+      }
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -40,30 +66,51 @@ export function RevealStagger({
   children: ReactNode;
   className?: string;
 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.1 });
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.08 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={className}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.08 } },
-      }}
+      className={cn(
+        "reveal-stagger",
+        visible && "reveal-stagger--visible",
+        className,
+      )}
     >
-      {children}
-    </motion.div>
+      {Children.map(children, (child, index) => {
+        if (!isValidElement(child)) return child;
+        const el = child as ReactElement<{
+          className?: string;
+          style?: React.CSSProperties;
+        }>;
+        return cloneElement(el, {
+          className: cn(el.props.className, "reveal-stagger__item"),
+          style: {
+            ...el.props.style,
+            ["--stagger-index" as string]: index,
+          },
+        });
+      })}
+    </div>
   );
 }
 
-export const staggerChild = {
-  hidden: { opacity: 0, y: 26 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.75, ease },
-  },
-};
+/** @deprecated Use RevealStagger children with reveal-stagger__item — kept for import compatibility. */
+export const staggerChild = {};

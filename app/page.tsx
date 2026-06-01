@@ -1,12 +1,5 @@
-import { Blog } from "@/components/sections/Blog";
-import { Faq } from "@/components/sections/Faq";
 import { Hero } from "@/components/sections/Hero";
-import { LeadCapture } from "@/components/sections/LeadCapture";
-import { Marquee } from "@/components/sections/Marquee";
-import { Portfolio } from "@/components/sections/Portfolio";
-import { Process } from "@/components/sections/Process";
 import { Services } from "@/components/sections/Services";
-import { WhyBrandCure } from "@/components/sections/WhyBrandCure";
 import { pickMixedHomePortfolioPreview } from "@/lib/portfolio/home-preview";
 import { resolveHomePortfolioProjects } from "@/lib/portfolio/resolve-portfolio-projects";
 import {
@@ -15,6 +8,35 @@ import {
 } from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import { getBlogPosts } from "@/lib/sanity/fetch";
+import dynamic from "next/dynamic";
+
+const Marquee = dynamic(() =>
+  import("@/components/sections/Marquee").then((m) => ({ default: m.Marquee })),
+);
+const WhyBrandCure = dynamic(() =>
+  import("@/components/sections/WhyBrandCure").then((m) => ({
+    default: m.WhyBrandCure,
+  })),
+);
+const Process = dynamic(() =>
+  import("@/components/sections/Process").then((m) => ({ default: m.Process })),
+);
+const Portfolio = dynamic(() =>
+  import("@/components/sections/Portfolio").then((m) => ({
+    default: m.Portfolio,
+  })),
+);
+const Blog = dynamic(() =>
+  import("@/components/sections/Blog").then((m) => ({ default: m.Blog })),
+);
+const Faq = dynamic(() =>
+  import("@/components/sections/Faq").then((m) => ({ default: m.Faq })),
+);
+const LeadCapture = dynamic(() =>
+  import("@/components/sections/LeadCapture").then((m) => ({
+    default: m.LeadCapture,
+  })),
+);
 
 export const metadata = createMetadata({
   title: HOME_META_TITLE,

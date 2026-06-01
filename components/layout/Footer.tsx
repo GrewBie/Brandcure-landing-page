@@ -53,7 +53,7 @@ export function Footer() {
           <div className="mb-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
             <div>
               <Logo dark />
-              <p className="mt-5 max-w-[240px] text-[13px] leading-[1.78] text-[rgba(255,255,255,0.33)]">
+              <p className="mt-5 max-w-[240px] text-[13px] leading-[1.78] text-[rgba(255,255,255,0.65)]">
                 AI-first growth partner for Indian SMBs, startups, and global
                 brands. Based in Chennai, Tamil Nadu.
               </p>
@@ -68,7 +68,7 @@ export function Footer() {
                       rel="noopener noreferrer"
                       aria-label={label}
                       role="listitem"
-                      className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.45)] transition-all duration-[220ms] hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.5)] hover:text-white"
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.7)] transition-all duration-[220ms] hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.5)] hover:text-white"
                     >
                       <Icon className="h-3.5 w-3.5" aria-hidden />
                     </a>
@@ -78,7 +78,7 @@ export function Footer() {
             </div>
             {columns.map((col) => (
               <div key={col.title}>
-                <p className="mb-4 text-[10px] font-bold tracking-[0.12em] text-[rgba(255,255,255,0.22)]">
+                <p className="mb-4 text-[10px] font-bold tracking-[0.12em] text-[rgba(255,255,255,0.55)]">
                   {col.title}
                 </p>
                 <ul className="space-y-2.5">
@@ -87,12 +87,12 @@ export function Footer() {
                       {item.href ? (
                         <Link
                           href={item.href}
-                          className="text-[13px] text-[rgba(255,255,255,0.4)] transition-colors hover:text-[rgba(255,255,255,0.85)]"
+                          className="text-[13px] text-[rgba(255,255,255,0.7)] transition-colors hover:text-[rgba(255,255,255,0.85)]"
                         >
                           {item.label}
                         </Link>
                       ) : (
-                        <span className="text-[13px] text-[rgba(255,255,255,0.4)]">
+                        <span className="text-[13px] text-[rgba(255,255,255,0.7)]">
                           {item.label}
                         </span>
                       )}
@@ -103,10 +103,10 @@ export function Footer() {
             ))}
           </div>
           <div className="flex flex-col gap-3 border-t border-[rgba(255,255,255,0.06)] pt-6 sm:flex-row sm:justify-between">
-            <p className="m-0 text-[11px] text-[rgba(255,255,255,0.18)]">
+            <p className="m-0 text-[11px] text-[rgba(255,255,255,0.5)]">
               © {new Date().getFullYear()} BrandCure Agency. All rights reserved.
             </p>
-            <p className="m-0 text-[11px] text-[rgba(255,255,255,0.18)]">
+            <p className="m-0 text-[11px] text-[rgba(255,255,255,0.5)]">
               AI-First · Made in Chennai
             </p>
           </div>

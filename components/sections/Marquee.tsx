@@ -9,7 +9,7 @@ export function Marquee() {
         {items.map((item, i) => (
           <span
             key={`${item}-${i}`}
-            className="inline-flex items-center gap-[22px] whitespace-nowrap px-[26px] text-[11px] font-semibold tracking-[0.1em] text-[rgba(255,255,255,0.45)]"
+            className="inline-flex items-center gap-[22px] whitespace-nowrap px-[26px] text-[11px] font-semibold tracking-[0.1em] text-[rgba(255,255,255,0.7)]"
           >
             {item}
             <span className="text-[10px] text-gold">✦</span>

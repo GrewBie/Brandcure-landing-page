@@ -1,5 +1,6 @@
 "use client";
 
+import { ClickToLoadEmbed } from "@/components/portfolio/ClickToLoadEmbed";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -7,14 +8,17 @@ type Props = {
   title: string;
   className?: string;
   aspectClass?: string;
+  /** Optional poster when no dedicated screenshot exists. */
+  posterSrc?: string;
 };
 
-/** Full live-site iframe — used on the portfolio detail page only. */
+/** Live site preview — iframe loads only after user click. */
 export function WebsiteLivePreview({
   url,
   title,
   className,
   aspectClass = "aspect-[16/10]",
+  posterSrc = "/og-card.png",
 }: Props) {
   return (
     <div
@@ -25,24 +29,26 @@ export function WebsiteLivePreview({
         className,
       )}
     >
-      <iframe
-        src={url}
+      <ClickToLoadEmbed
+        embedUrl={url}
         title={`Live site — ${title}`}
-        className="h-full w-full border-0 bg-white"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-modals"
-        referrerPolicy="no-referrer-when-downgrade"
-        loading="eager"
+        posterSrc={posterSrc}
+        posterAlt={`Preview of ${title}`}
+        className="absolute inset-0 min-h-[320px]"
+        playLabel="Load live site preview"
+        footer={
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-gradient-to-b from-[rgba(0,0,0,0.4)] to-transparent px-3 py-2">
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto rounded-full bg-gold px-3 py-1.5 text-[11px] font-bold text-white shadow-sm hover:opacity-90"
+            >
+              Open full site ↗
+            </a>
+          </div>
+        }
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-end bg-gradient-to-b from-[rgba(0,0,0,0.4)] to-transparent px-3 py-2">
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pointer-events-auto rounded-full bg-gold px-3 py-1.5 text-[11px] font-bold text-white shadow-sm hover:opacity-90"
-        >
-          Open full site ↗
-        </a>
-      </div>
     </div>
   );
 }

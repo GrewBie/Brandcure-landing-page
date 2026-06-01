@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
@@ -119,11 +118,11 @@ export function CinematicThemeSwitcher({
         </defs>
       </svg>
 
-      <motion.button
+      <button
         ref={toggleRef}
         type="button"
         onClick={handleToggle}
-        className="relative flex h-[64px] w-[104px] items-center rounded-full p-[6px] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream dark:focus-visible:ring-offset-[#121316]"
+        className="relative flex h-[64px] w-[104px] items-center rounded-full p-[6px] transition-all duration-300 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream dark:focus-visible:ring-offset-[#121316]"
         style={{
           background: isDark
             ? "radial-gradient(ellipse at top left, #1e293b 0%, #0f172a 40%, #020617 100%)"
@@ -165,7 +164,6 @@ export function CinematicThemeSwitcher({
         aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
         role="switch"
         aria-checked={isDark}
-        whileTap={{ scale: 0.98 }}
       >
         <div
           className="pointer-events-none absolute inset-[3px] rounded-full"
@@ -214,8 +212,11 @@ export function CinematicThemeSwitcher({
           />
         </div>
 
-        <motion.div
-          className="relative z-10 flex h-[44px] w-[44px] items-center justify-center overflow-hidden rounded-full"
+        <div
+          className={cn(
+            "theme-switch-thumb relative z-10 flex h-[44px] w-[44px] items-center justify-center overflow-hidden rounded-full",
+            isDark && "theme-switch-thumb--dark",
+          )}
           style={{
             background: isDark
               ? "linear-gradient(145deg, #64748b 0%, #475569 50%, #334155 100%)"
@@ -243,14 +244,6 @@ export function CinematicThemeSwitcher({
               ? "2px solid rgba(148, 163, 184, 0.3)"
               : "2px solid rgba(255, 255, 255, 0.9)",
           }}
-          animate={{
-            x: isDark ? 46 : 0,
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 20,
-          }}
         >
           <div
             className="pointer-events-none absolute inset-0 rounded-full"
@@ -263,11 +256,12 @@ export function CinematicThemeSwitcher({
 
           {isAnimating &&
             particles.map((particle) => (
-              <motion.div
+              <div
                 key={particle.id}
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                className="theme-switch-particle pointer-events-none absolute inset-0 flex items-center justify-center"
+                style={{ animationDelay: `${particle.delay}s` }}
               >
-                <motion.div
+                <div
                   className="absolute rounded-full"
                   style={{
                     width: "10px",
@@ -277,23 +271,8 @@ export function CinematicThemeSwitcher({
                       : "radial-gradient(circle, rgba(251, 191, 36, 0.7) 0%, rgba(251, 191, 36, 0) 70%)",
                     mixBlendMode: "normal",
                   }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: isDark ? 6 : 8, opacity: [0, 1, 0] }}
-                  transition={{
-                    duration: isDark ? 0.5 : particle.duration,
-                    delay: particle.delay,
-                    ease: "easeOut",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 rounded-full opacity-40"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                      mixBlendMode: "overlay",
-                    }}
-                  />
-                </motion.div>
-              </motion.div>
+                />
+              </div>
             ))}
 
           <div className="relative z-10">
@@ -303,8 +282,8 @@ export function CinematicThemeSwitcher({
               <Sun size={20} className="text-amber-500" aria-hidden />
             )}
           </div>
-        </motion.div>
-      </motion.button>
+        </div>
+      </button>
     </div>
   );
 }

@@ -1,9 +1,8 @@
 "use client";
 
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
-import { Reveal, RevealStagger, staggerChild } from "@/components/ui/Reveal";
+import { Reveal, RevealStagger } from "@/components/ui/Reveal";
 import { whyPoints } from "@/lib/mock-data";
-import { motion } from "framer-motion";
 
 export function WhyBrandCure() {
   return (
@@ -42,16 +41,15 @@ export function WhyBrandCure() {
 
         <RevealStagger className="grid gap-12 md:grid-cols-3">
           {whyPoints.map((point) => (
-            <motion.div
+            <div
               key={point.title}
-              variants={staggerChild}
               className="border-t border-[var(--on-dark-border)] pt-7"
             >
               <h3 className="font-serif text-[26px] font-medium">{point.title}</h3>
               <p className="mt-3.5 text-sm leading-[1.8] text-[var(--on-dark-secondary)]">
                 {point.description}
               </p>
-            </motion.div>
+            </div>
           ))}
         </RevealStagger>
       </div>

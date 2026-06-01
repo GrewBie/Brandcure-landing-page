@@ -2,7 +2,8 @@
 
 import { browserNav } from "@/lib/browser-navigator";
 import { cn } from "@/lib/cn";
-import { parseVideoUrl, videoEmbedAutoplaySrc } from "@/lib/video/embed";
+import { ClickToLoadEmbed } from "@/components/portfolio/ClickToLoadEmbed";
+import { parseVideoUrl } from "@/lib/video/embed";
 import { videoDomId } from "@/lib/portfolio-nav";
 import type { NavigatorSection } from "@/types/navigator";
 import type { PortfolioProject } from "@/types/content";
@@ -110,14 +111,15 @@ export function VideoCard({ project, section, index, videoUrl }: Props) {
         )}
 
         {playing && parsed.embedUrl && parsed.provider !== "file" && (
-            <iframe
-              src={videoEmbedAutoplaySrc(parsed) ?? parsed.embedUrl}
-              title={project.title}
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-            />
-          )}
+          <ClickToLoadEmbed
+            embedUrl={parsed.embedUrl}
+            title={project.title}
+            posterSrc={project.heroImageUrl ?? "/og-card.png"}
+            posterAlt={project.title}
+            className="absolute inset-0"
+            playLabel="Load video"
+          />
+        )}
 
         {playing && parsed.provider === "file" && (
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-[rgba(0,0,0,0.6)] to-transparent px-3 py-2">

@@ -10,7 +10,7 @@ import { PortfolioDetailFocus } from "@/components/portfolio/PortfolioDetailFocu
 import { PortfolioPendingNav } from "@/components/portfolio/PortfolioPendingNav";
 import { PortfolioExperienceProvider } from "@/contexts/PortfolioExperienceContext";
 import { HashScroll } from "@/components/layout/HashScroll";
-import { CustomCursor } from "@/components/ui/CustomCursor";
+import { CustomCursor } from "@/components/ui/LazyCustomCursor";
 import type { ReactNode } from "react";
 
 export function ClientProviders({ children }: { children: ReactNode }) {

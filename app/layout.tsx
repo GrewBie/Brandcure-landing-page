@@ -1,8 +1,8 @@
 import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { ScrollProgress } from "@/components/ui/LazyScrollProgress";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
-import { ChatWidget } from "@/components/chat/ChatWidget";
+import { LazyChatWidget } from "@/components/chat/LazyChatWidget";
 import { ClientProviders } from "@/components/providers/ClientProviders";
 import { SchemaHead } from "@/components/seo/SchemaHead";
 import { globalSchemaGraph } from "@/lib/seo/schema";
@@ -48,7 +48,7 @@ export default function RootLayout({
           <Nav />
           <main className="flex-1">{children}</main>
           <Footer />
-          <ChatWidget />
+          <LazyChatWidget />
         </ClientProviders>
       </body>
     </html>

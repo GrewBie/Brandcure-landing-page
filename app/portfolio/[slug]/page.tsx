@@ -116,6 +116,7 @@ export default async function PortfolioProjectPage({ params }: Props) {
             <WebsiteLivePreview
               url={project.websiteUrl}
               title={displayTitle}
+              posterSrc={project.heroImageUrl}
               aspectClass="h-[min(88vh,980px)] w-full"
             />
           ) : (

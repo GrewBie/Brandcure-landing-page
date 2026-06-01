@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@source "../components/**/*.{js,ts,jsx,tsx}";
+@source "../app/**/*.{js,ts,jsx,tsx}";
+@source "../lib/**/*.{js,ts,jsx,tsx}";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -15,7 +19,7 @@
   --charcoal: var(--brand-charcoal);
   --black: var(--brand-black);
   --gray: #6b6e73;
-  --light-gray: #c4c4bc;
+  --light-gray: #75787d;
   --gold: #c4a26a;
   --gold-dark: #9e7e4a;
   --success: #4caf50;
@@ -412,6 +416,63 @@ body.custom-cursor-active {
   animation: marquee 24s linear infinite;
 }
 
+/* Scroll reveal (replaces framer-motion on critical path) */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 26px));
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger .reveal-stagger__item {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--stagger-index, 0) * 0.09s);
+}
+
+.reveal-stagger--visible .reveal-stagger__item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Theme switcher thumb */
+.theme-switch-thumb {
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.theme-switch-thumb--dark {
+  transform: translateX(46px);
+}
+
+.theme-switch-particle {
+  animation: theme-particle 0.65s ease-out forwards;
+}
+
+@keyframes theme-particle {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(6);
+    opacity: 0;
+  }
+}
+
 .scroll-progress-bar {
   background: linear-gradient(90deg, var(--gold), var(--gold-dark), var(--gold));
   background-size: 200% 100%;
@@ -438,6 +499,13 @@ body.custom-cursor-active {
   .marquee-track,
   .scroll-progress-bar {
     animation: none;
+  }
+
+  .reveal,
+  .reveal-stagger .reveal-stagger__item {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

@@ -1,9 +1,8 @@
 "use client";
 
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
-import { Reveal, RevealStagger, staggerChild } from "@/components/ui/Reveal";
+import { Reveal, RevealStagger } from "@/components/ui/Reveal";
 import { services } from "@/lib/mock-data";
-import { motion } from "framer-motion";
 
 function ServiceCard({
   service,
@@ -50,9 +49,9 @@ export function Services() {
 
         <RevealStagger className="grid-border grid-border-3">
           {services.map((service) => (
-            <motion.div key={service.title} variants={staggerChild}>
+            <div key={service.title}>
               <ServiceCard service={service} />
-            </motion.div>
+            </div>
           ))}
         </RevealStagger>
       </div>

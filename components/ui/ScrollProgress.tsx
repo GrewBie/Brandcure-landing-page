@@ -8,16 +8,29 @@ export function ScrollProgress() {
   const [max, setMax] = useState(1);
 
   useEffect(() => {
-    const update = () =>
+    let rafId = 0;
+
+    const update = () => {
+      rafId = 0;
       setMax(
         Math.max(
           1,
           document.documentElement.scrollHeight - window.innerHeight,
         ),
       );
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    };
+
+    const schedule = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    schedule();
+    window.addEventListener("resize", schedule, { passive: true });
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", schedule);
+    };
   }, []);
 
   const progress = Math.min(100, (scrollY / max) * 100);

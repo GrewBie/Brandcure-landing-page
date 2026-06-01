@@ -1,13 +1,29 @@
 "use client";
 
 import { Logo } from "@/components/layout/Logo";
-import { CinematicThemeSwitcher } from "@/components/ui/cinematic-theme-switcher";
 import { cn } from "@/lib/cn";
 import { useScrollY } from "@/hooks/useScrollY";
 import { MAIN_NAV_LINKS, NAV_CTA_HREF } from "@/lib/nav-links";
 import { Menu, X } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
+
+const CinematicThemeSwitcher = dynamic(
+  () =>
+    import("@/components/ui/cinematic-theme-switcher").then((m) => ({
+      default: m.CinematicThemeSwitcher,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="h-[33px] w-[54px] shrink-0 scale-[0.52] origin-center rounded-full bg-[var(--surface-muted)]"
+        aria-hidden
+      />
+    ),
+  },
+);
 
 const NAV_HEIGHT = 76;
 
