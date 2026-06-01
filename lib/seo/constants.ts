@@ -38,7 +38,7 @@ export const SITE_URL = resolveSiteUrl();
 
 export const SITE_NAME = "BrandCure";
 
-export const SITE_TAGLINE = "AI-first growth partner";
+export const SITE_TAGLINE = "Your AI-native digital partner";
 
 /** Default meta description (home + sitewide fallback). */
 export const DEFAULT_DESCRIPTION = HOME_META_DESCRIPTION;

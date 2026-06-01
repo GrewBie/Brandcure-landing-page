@@ -5,6 +5,7 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/lib/seo/constants";
+import { HOME_META_TITLE } from "@/lib/seo/descriptions";
 
 type CreateMetadataOptions = {
   title: string;
@@ -93,7 +94,7 @@ export const rootMetadata: Metadata = {
     ? { verification: { google: googleSiteVerification } }
     : {}),
   title: {
-    default: `${SITE_NAME} | AI-First Website, Marketing & Automation`,
+    default: HOME_META_TITLE,
     template: `%s`,
   },
   description: DEFAULT_DESCRIPTION,
@@ -121,13 +122,13 @@ export const rootMetadata: Metadata = {
     locale: "en_IN",
     url: `${SITE_URL}/`,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} | Cure your brand. 3× faster.`,
+    title: `${SITE_NAME} | Your AI-native digital partner`,
     description: DEFAULT_DESCRIPTION,
     images: [{ url: "/brandcure-bc.svg", alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | AI-First Growth Partner`,
+    title: `${SITE_NAME} | Make your business AI-first`,
     description: DEFAULT_DESCRIPTION,
   },
   icons: {

@@ -4,13 +4,16 @@ import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import { resolvePortfolioProjects } from "@/lib/portfolio/resolve-portfolio-projects";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo/json-ld";
-import { PORTFOLIO_INDEX_META_DESCRIPTION } from "@/lib/seo/descriptions";
+import {
+  PORTFOLIO_INDEX_META_DESCRIPTION,
+  PORTFOLIO_INDEX_META_TITLE,
+} from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata = createMetadata({
-  title: "Portfolio | BrandCure — Websites, AI Automation & Video Ads",
+  title: PORTFOLIO_INDEX_META_TITLE,
   description: PORTFOLIO_INDEX_META_DESCRIPTION,
   path: "/portfolio",
 });
@@ -23,7 +26,7 @@ export default async function PortfolioIndexPage() {
       <JsonLd
         data={[
           webPageJsonLd({
-            name: "BrandCure Portfolio",
+            name: PORTFOLIO_INDEX_META_TITLE,
             description: PORTFOLIO_INDEX_META_DESCRIPTION,
             path: "/portfolio",
           }),

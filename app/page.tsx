@@ -11,12 +11,15 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pickMixedHomePortfolioPreview } from "@/lib/portfolio/home-preview";
 import { resolveHomePortfolioProjects } from "@/lib/portfolio/resolve-portfolio-projects";
 import { homePageJsonLdGraph } from "@/lib/seo/json-ld";
-import { HOME_META_DESCRIPTION } from "@/lib/seo/descriptions";
+import {
+  HOME_META_DESCRIPTION,
+  HOME_META_TITLE,
+} from "@/lib/seo/descriptions";
 import { createMetadata } from "@/lib/seo/metadata";
 import { getBlogPosts } from "@/lib/sanity/fetch";
 
 export const metadata = createMetadata({
-  title: "BrandCure | AI-First Website, Marketing & Automation Agency",
+  title: HOME_META_TITLE,
   description: HOME_META_DESCRIPTION,
   path: "/",
 });
