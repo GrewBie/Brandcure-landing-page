@@ -103,10 +103,6 @@ export const rootMetadata: Metadata = {
     ? { verification: { google: googleSiteVerification } }
     : {}),
   other: {
-    "geo.region": "IN-TN",
-    "geo.placename": "Chennai",
-    "geo.position": "13.0827;80.2707",
-    ICBM: "13.0827, 80.2707",
     language: "en-IN",
     "DC.language": "en-IN",
   },

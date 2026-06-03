@@ -11,7 +11,9 @@ import {
 } from "@/lib/portfolio/maybe-curate-after-turn";
 import { runGuidedPortfolioTour } from "@/lib/portfolio/present-curated-tour";
 import {
+  buildAiAdPrePlaySpeech,
   buildProjectNarration,
+  isAiAdPlayCommand,
   isWebsiteShowcaseCommand,
 } from "@/lib/portfolio/website-showcase-speech";
 import { executeVoiceNavCommand } from "@/lib/portfolio/voice-nav-sequence";
@@ -501,12 +503,15 @@ export function useVoiceNavigator({
         command.command,
         catalogItem,
       );
+      const aiAdPlay = isAiAdPlayCommand(command.command, catalogItem);
       if (websiteShowcase && catalogItem) {
         command.speech = buildProjectNarration(
           catalogItem,
           mergedSession,
           command.speech,
         );
+      } else if (aiAdPlay && catalogItem) {
+        command.speech = buildAiAdPrePlaySpeech(catalogItem, mergedSession);
       }
 
       if (
@@ -558,6 +563,9 @@ export function useVoiceNavigator({
         } else if (websiteShowcase) {
           await runNav();
           await speakHandoff();
+        } else if (aiAdPlay) {
+          await speakHandoff();
+          await runNav();
         } else {
           await Promise.all([speakHandoff(), runNav()]);
         }

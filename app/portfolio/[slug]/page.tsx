@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return createMetadata({
     title: `${displayTitle} | BrandCure Portfolio`,
     description: metaDescription(
-      `${displayTitle} — ${rawDescription} Case study by BrandCure, Chennai.`,
+      `${displayTitle} — ${rawDescription} Case study by BrandCure.`,
     ),
     path: `/portfolio/${slug}`,
     image: project.heroImageUrl,

@@ -1,6 +1,10 @@
 import { findNavItemByUserText, sanitizeNavigatorCommand } from "@/lib/agent-guardrails";
 import { planCuratedPortfolioTour } from "@/lib/portfolio/maybe-curate-after-turn";
-import { buildProjectNarration } from "@/lib/portfolio/website-showcase-speech";
+import {
+  buildAiAdPrePlaySpeech,
+  buildProjectNarration,
+  isCreativesItem,
+} from "@/lib/portfolio/website-showcase-speech";
 import type { AgentMessage, AgentSessionState } from "@/types/agent-state";
 import type { NavItem, NavigatorCommand, NavigatorSection } from "@/types/navigator";
 
@@ -55,7 +59,7 @@ export function inferCommandFromText(
           command: "summarize_card",
           navId: plan.picks[0].navId,
           section: plan.picks[0].navSection,
-          speech: `I'll show you ${plan.picks.length} projects matched to you — ${names}. Starting with ${plan.picks[0].title}.`,
+          speech: `I'll open our BrandCure portfolio and show you ${plan.picks.length} projects matched to you — ${names}. Starting with ${plan.picks[0].title}.`,
           stateUpdate: plan.sessionPatch,
         },
         catalog,
@@ -104,14 +108,18 @@ export function inferCommandFromText(
   }
 
   if (/\b(play|video|watch|demo)\b/.test(lower) && item) {
+    const speech =
+      item.videoUrl && isCreativesItem(item)
+        ? buildAiAdPrePlaySpeech(item, session)
+        : item.videoUrl
+          ? `Playing the ${item.title} showcase.`
+          : `${item.title}: ${item.result}. ${item.agentSummary ?? ""}`.trim();
     return sanitizeNavigatorCommand(
       {
         command: item.videoUrl ? "play_video" : "summarize_card",
         navId: item.navId,
         section: item.navSection,
-        speech: item.videoUrl
-          ? `Playing the ${item.title} showcase.`
-          : `${item.title}: ${item.result}. ${item.agentSummary ?? ""}`.trim(),
+        speech,
       },
       catalog,
     );
@@ -149,12 +157,17 @@ export function inferCommandFromText(
   }
 
   if (item) {
+    const speech = isCreativesItem(item)
+      ? buildAiAdPrePlaySpeech(item, session)
+      : `${item.title}: ${item.result}. ${item.agentSummary ?? ""}`.trim();
     return sanitizeNavigatorCommand(
       {
-        command: "summarize_card",
+        command: isCreativesItem(item) && item.videoUrl
+          ? "play_video"
+          : "summarize_card",
         navId: item.navId,
         section: item.navSection,
-        speech: `${item.title}: ${item.result}. ${item.agentSummary ?? ""}`.trim(),
+        speech,
       },
       catalog,
     );

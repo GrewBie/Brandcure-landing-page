@@ -45,7 +45,7 @@ export const DEFAULT_DESCRIPTION = HOME_META_DESCRIPTION;
 
 export const DEFAULT_KEYWORDS = [
   "AI marketing agency India",
-  "website design Chennai",
+  "website design India",
   "business automation WhatsApp",
   "AI video ads",
   "digital agency SMB",

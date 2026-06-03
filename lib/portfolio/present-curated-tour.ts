@@ -11,7 +11,12 @@ import {
   openPortfolioForTour,
   summarizePortfolioItem,
 } from "@/lib/portfolio/run-nav-command";
-import { buildProjectNarration } from "@/lib/portfolio/website-showcase-speech";
+import {
+  buildAiAdPrePlaySpeech,
+  buildPortfolioTourIntro,
+  buildProjectNarration,
+  isCreativesItem,
+} from "@/lib/portfolio/website-showcase-speech";
 import { showcaseWebsiteProject } from "@/lib/portfolio/voice-nav-sequence";
 import type { AgentSessionState } from "@/types/agent-state";
 import type { NavItem } from "@/types/navigator";
@@ -62,18 +67,39 @@ export async function runGuidedPortfolioTour(
       await cancellableDelay(BETWEEN_MS, workGen);
     }
 
+    const intro = buildPortfolioTourIntro(items, deps.getSession());
+    if (intro) {
+      deps.recordTurn("assistant", intro, "voice");
+      await deps.speak(intro);
+      if (!isAgentActivityActive(workGen)) return;
+      await cancellableDelay(BETWEEN_MS, workGen);
+    }
+
     for (let i = 0; i < items.length; i++) {
       if (!isAgentActivityActive(workGen)) break;
 
       const item = items[i]!;
       const session = deps.getSession();
-      const speech = buildProjectNarration(item, session);
+      const speech = isCreativesItem(item)
+        ? buildAiAdPrePlaySpeech(item, session)
+        : buildProjectNarration(item, session);
 
       deps.recordTurn("assistant", speech, "voice");
 
       if (item.navSection === "websites" && item.websiteUrl) {
         await showcaseWebsiteProject(catalog, item.navId, workGen);
         await cancellableDelay(LIVE_SITE_PAINT_MS, workGen);
+        await deps.speak(speech);
+      } else if (isCreativesItem(item)) {
+        summarizePortfolioItem(catalog, item.navId);
+        await cancellableDelay(500, workGen);
+        if (!isAgentActivityActive(workGen)) break;
+        await deps.speak(speech);
+        if (!isAgentActivityActive(workGen)) break;
+        if (item.videoUrl) {
+          browserNav.playVideo(item.navId);
+        }
+        await cancellableDelay(CARD_DWELL_MS, workGen);
       } else {
         summarizePortfolioItem(catalog, item.navId);
         if (item.videoUrl) {
@@ -82,11 +108,8 @@ export async function runGuidedPortfolioTour(
           browserNav.playVideo(item.navId);
         }
         await cancellableDelay(500, workGen);
+        await deps.speak(speech);
       }
-
-      if (!isAgentActivityActive(workGen)) break;
-
-      await deps.speak(speech);
 
       if (!isAgentActivityActive(workGen)) break;
 
@@ -135,8 +158,9 @@ export async function presentCuratedPortfolioTour(
         await showcaseWebsiteProject(catalog, item.navId, gen);
       } else {
         summarizePortfolioItem(catalog, item.navId);
+        const prePlayMs = isCreativesItem(item) ? 1_200 : 800;
         if (item.videoUrl) {
-          await cancellableDelay(800, gen);
+          await cancellableDelay(prePlayMs, gen);
           if (!isAgentActivityActive(gen)) break;
           browserNav.playVideo(item.navId);
         }

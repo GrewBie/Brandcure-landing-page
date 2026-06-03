@@ -156,13 +156,20 @@ export function curatedPicksPromptBlock(
 ): string {
   if (picks.length === 0) return "";
   const lines = picks.map((p, i) => {
-    const summary = p.agentSummary?.trim() || p.result;
+    const summary =
+      p.navSection === "creatives"
+        ? p.result
+        : p.agentSummary?.trim() || p.result;
     const live = p.websiteUrl ? " [live website]" : p.videoUrl ? " [has video]" : "";
-    return `${i + 1}. navId="${p.navId}" | ${p.navSection}${live} | "${p.title}" (${p.industry}) — ${summary}`;
+    const adNote =
+      p.navSection === "creatives"
+        ? " [AI ad: speak significance only, then play_video — do not read ad script]"
+        : "";
+    return `${i + 1}. navId="${p.navId}" | ${p.navSection}${live}${adNote} | "${p.title}" (${p.industry}) — ${summary}`;
   });
   return [
     "CURATED PORTFOLIO PICKS for this visitor (show ONLY these 2–3, in order — one at a time):",
-    "For each pick: command show_website (websites) or summarize_card/play_video, and speech must describe THAT project (title, results, why it fits them) before moving to the next navId.",
+    "Before the first pick, tell them you are showing the BrandCure portfolio and which section. Websites: show_website + describe the build. Automations: summarize then play if video. AI ads (creatives): 1–2 sentences on significance (result metric + fit) then play_video — never read the full ad description aloud.",
     ...lines,
     session.business ? `Tailor narration to their business: ${session.business}.` : "",
     session.challenge ? `Their goal: ${session.challenge}.` : "",

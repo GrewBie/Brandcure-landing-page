@@ -13,14 +13,14 @@ export function metaDescription(text: string, max = META_DESC_MAX): string {
 
 /** Site-wide default — used in root layout and as fallback. */
 export const HOME_META_TITLE =
-  "BrandCure | Your AI-Native Digital Partner — Chennai";
+  "BrandCure | Your AI-Native Digital Partner";
 
 export const HOME_META_DESCRIPTION = metaDescription(
-  "Your digital partner to make your business AI-first: websites, AI marketing, WhatsApp automation & video ads. Chennai. Free audit in 24–48 hours.",
+  "Your digital partner to make your business AI-first: websites, AI marketing, WhatsApp automation & video ads. Free audit in 24–48 hours.",
 );
 
 export const BLOG_INDEX_META_DESCRIPTION = metaDescription(
-  "Guides on AI marketing, WhatsApp automation, and website SEO for Indian SMBs and startups. Practical growth insights from BrandCure, Chennai.",
+  "Guides on AI marketing, WhatsApp automation, and website SEO for Indian SMBs and startups. Practical growth insights from BrandCure.",
 );
 
 /** SERP title — benefit-first, ~60 chars visible in Google. */
@@ -28,5 +28,5 @@ export const PORTFOLIO_INDEX_META_TITLE =
   "Your Digital Partner — Go AI-First & AI-Native | BrandCure";
 
 export const PORTFOLIO_INDEX_META_DESCRIPTION = metaDescription(
-  "Make your business AI-native—websites, AI video ads & automation from your digital partner in Chennai. Real client work. Browse case studies. Free audit.",
+  "Make your business AI-native—websites, AI video ads & automation from your digital partner. Real client work. Browse case studies. Free audit.",
 );
