@@ -51,14 +51,15 @@ export function Portfolio({
               id="portfolio-heading"
               className="font-serif text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[1.06] tracking-[-0.02em] text-brand-black"
             >
-              Results,
+              The work,
               <br />
-              <em className="italic text-gray">not promises.</em>
+              <em className="italic text-gray">judge it yourself.</em>
             </h2>
-            <p className="mt-3 max-w-lg text-sm text-gray">
-              Live work from our studio — AI creatives, automations, and websites.
-              Three highlights from each pillar; Neha can walk you through the full
-              portfolio in chat.
+            <p className="mt-3 max-w-xl text-sm text-gray">
+              We&apos;re a young, founder-led studio. Below is a mix of launch
+              campaigns, concept builds, and founding-client projects — shown so
+              you can judge our craft directly, not inflated numbers. Neha can
+              walk you through any of it in chat.
             </p>
           </div>
         </Reveal>

@@ -1,53 +1,53 @@
 import type { SiteSettings } from "@/types/content";
 
 export const siteSettings: SiteSettings = {
-  contactEmail: "hello@brandcure.in",
+  contactEmail: "contact@grewbie.com",
   whatsappNumber: "918838924425",
   whatsappDisplay: "+91 88389 24425",
 };
 
 export const services = [
   {
-    sym: "◻",
-    title: "Digital Presence",
-    sub: "Website · SEO · Social",
-    description:
-      "Professional website, local SEO, and social media — built and managed end to end. Live in 30 days.",
-  },
-  {
-    sym: "◈",
-    title: "AI Marketing",
-    sub: "Content · Ads · Email",
-    description:
-      "Done-for-you marketing engine. AI produces content, ads, and email campaigns managed by our team.",
-  },
-  {
-    sym: "⟳",
-    title: "Business Automation",
-    sub: "WhatsApp · CRM · Ops",
-    description:
-      "Automate lead follow-up, invoicing, social posting, and all repetitive business operations.",
-  },
-  {
     sym: "▣",
-    title: "Full-Stack Growth",
-    sub: "Everything. One contract.",
+    title: "Website Development",
+    sub: "Design · Build · Convert",
     description:
-      "Website + marketing + automation under one retainer. One team, one contact, full accountability.",
+      "Fast, beautiful websites that turn visitors into booked calls — live in 30 days. Engineered to load instantly, rank on Google, and sell while you sleep.",
   },
   {
     sym: "◇",
-    title: "E-commerce Growth",
-    sub: "Store · ROAS · Creative",
+    title: "SEO",
+    sub: "Search Engine Optimization",
     description:
-      "Shopify / WooCommerce builds, AI ad creative at scale, and full-funnel performance management.",
+      "Rank page one for the keywords your buyers actually search. Technical, content, and local SEO that makes Google your highest-performing salesperson.",
+  },
+  {
+    sym: "◈",
+    title: "AEO",
+    sub: "Answer Engine Optimization",
+    description:
+      "Own the direct answer. We structure your content so Google snippets, voice search, and assistants quote you first — winning the click before rivals appear.",
+  },
+  {
+    sym: "◻",
+    title: "GEO",
+    sub: "Generative Engine Optimization",
+    description:
+      "Get recommended by AI. We make your brand the source ChatGPT, Gemini, and Perplexity cite when buyers ask — the new front page of the internet.",
   },
   {
     sym: "▷",
-    title: "AI Creatives & Video",
-    sub: "Reels · Ads · Brand film",
+    title: "AI Ad Creatives",
+    sub: "Reels · Ads · UGC",
     description:
-      "AI-powered video ads, short-form reels, and campaign creative — scripted, produced, and ready to run across Meta, YouTube, and WhatsApp.",
+      "Scroll-stopping video ads produced by AI at a fraction of studio cost — scripted, shot, and optimized for Meta, YouTube, and WhatsApp to drive real ROAS.",
+  },
+  {
+    sym: "⟳",
+    title: "AI Automation",
+    sub: "WhatsApp · CRM · Workflows",
+    description:
+      "Put follow-ups, bookings, invoicing, and lead nurture on autopilot. AI agents work 24/7 so you never lose another customer to a slow reply.",
   },
 ] as const;
 
@@ -56,58 +56,58 @@ export const processSteps = [
     step: "01",
     title: "Free Audit",
     description:
-      "We analyze your website, SEO, competitors, and missed automation opportunities. You receive a clear report — what's working, what's costing you customers, what to fix first. No pitch. Just data.",
+      "We review your website, SEO, and where enquiries leak — then send a plain report: what's working, what's costing you customers, what to fix first. No pitch.",
     time: "24–48 hrs",
   },
   {
     step: "02",
     title: "Strategy & Proposal",
     description:
-      "Based on your audit, we map a precise 90-day growth plan with deliverables, timelines, and expected outcomes. You know exactly what you're getting before you sign anything.",
+      "We map a 90-day plan with deliverables, timelines, and the outcomes you should expect. You see exactly what you're getting — and what it costs — before you pay anything.",
     time: "3–5 days",
   },
   {
     step: "03",
     title: "Build & Launch",
     description:
-      "We execute. Website live, content flowing, ads running, automations active. Your AI-powered digital team is operational — and you start seeing leads from day one.",
+      "We build. Site live, content flowing, ads running, WhatsApp follow-up active — so leads start getting answered from day one.",
     time: "14–30 days",
   },
 ] as const;
 
 export const whyPoints = [
   {
-    title: "AI-Native Speed",
+    title: "AI-native speed",
     description:
-      "AI handles content, briefs, and reporting. Humans do strategy. Delivery is 3× faster than any traditional setup — and we have the case studies to prove it.",
+      "AI drafts content, briefs, and reports; senior people own strategy and QA. That's how a new site goes live in about 30 days and campaigns launch in weeks, not quarters. [FILL: real client + turnaround, e.g. \"Aarav Clinic's site live in 18 days\"].",
   },
   {
-    title: "Full-Stack Ownership",
+    title: "Founder-led ownership",
     description:
-      "Website, marketing, automation — one team, one contract. No fragmented vendors. No missed deadlines. One person to call when things need to move.",
+      "You work directly with the people doing the work — no junior hand-offs, no account-manager telephone. One team owns your website, marketing, and automation, and one person picks up when you call.",
   },
   {
-    title: "Global Mindset",
+    title: "Built for India and beyond",
     description:
-      "We build with a worldwide outlook — clear positioning, professional polish, and digital systems that work wherever your customers find you. Growth-ready, not geography-limited.",
+      "WhatsApp-first, INR-friendly, and fluent in how Indian SMBs actually buy. For clients abroad: clear English, async Loom and Slack/WhatsApp updates, and working hours that overlap your timezone.",
   },
 ] as const;
 
 export const auditChecklist = [
-  "Website performance & speed score",
-  "Local SEO gap analysis",
-  "Top 3 automation opportunities",
-  "Head-to-head competitor comparison",
+  "Where your website is leaking enquiries",
+  "Local SEO & Google visibility gaps",
+  "Top 3 follow-up / automation wins",
+  "How you stack up against 2 competitors",
 ] as const;
 
 export const marqueeItems = [
   "AI-First Agency",
   "3× Faster Delivery",
-  "Flexible Pricing",
   "Website in 30 Days",
+  "SEO · AEO · GEO",
+  "Rank on ChatGPT & Google",
+  "AI Ad Creatives",
   "WhatsApp Automation",
-  "AI Video & Creatives",
-  "Full-Stack Growth",
   "Chennai · Bangalore · Mumbai",
   "Free Digital Audit",
 ];

@@ -88,22 +88,28 @@ export function faqPageSchema() {
 
 const SERVICE_DEFINITIONS = [
   {
-    name: "Digital Presence",
-    serviceType: "Digital Presence (website, SEO, social)",
+    name: "Website Development",
+    serviceType: "Website design and development",
   },
   {
-    name: "AI Marketing",
-    serviceType: "AI Marketing (content, ads, email)",
+    name: "SEO",
+    serviceType: "Search Engine Optimization (SEO)",
   },
   {
-    name: "Business Automation",
-    serviceType: "Business Automation (WhatsApp, CRM, ops)",
+    name: "AEO",
+    serviceType: "Answer Engine Optimization (AEO)",
   },
-  { name: "Full-Stack Growth", serviceType: "Full-Stack Growth" },
-  { name: "E-commerce Growth", serviceType: "E-commerce Growth" },
   {
-    name: "AI Creatives & Video",
-    serviceType: "AI Creatives & Video",
+    name: "GEO",
+    serviceType: "Generative Engine Optimization (GEO)",
+  },
+  {
+    name: "AI Ad Creatives",
+    serviceType: "AI ad creatives and video production",
+  },
+  {
+    name: "AI Automation",
+    serviceType: "AI automation (WhatsApp, CRM, workflows)",
   },
 ] as const;
 

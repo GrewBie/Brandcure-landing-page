@@ -54,7 +54,7 @@ export const DEFAULT_KEYWORDS = [
 
 export const ORGANIZATION = {
   name: SITE_NAME,
-  email: "hello@brandcure.in",
+  email: "contact@grewbie.com",
   telephone: "+918838924425",
   whatsappDisplay: "+91 88389 24425",
   address: {
@@ -71,10 +71,10 @@ export const ORGANIZATION = {
 } as const;
 
 export const SERVICES_FOR_SCHEMA = [
-  "Website design and SEO",
-  "AI marketing and content",
-  "WhatsApp and business automation",
-  "E-commerce growth",
-  "AI video and ad creatives",
-  "Full-stack growth retainers",
+  "Website development",
+  "Search Engine Optimization (SEO)",
+  "Answer Engine Optimization (AEO)",
+  "Generative Engine Optimization (GEO)",
+  "AI ad creatives and video",
+  "AI automation",
 ] as const;

@@ -11,12 +11,12 @@ const columns: {
   {
     title: "Services",
     links: [
-      { label: "Website Design", href: "/#services" },
-      { label: "AI Marketing", href: "/#services" },
-      { label: "Automation", href: "/#services" },
-      { label: "Full-Stack Growth", href: "/#services" },
-      { label: "E-commerce", href: "/#services" },
-      { label: "AI Creatives", href: "/#services" },
+      { label: "Website Development", href: "/#services" },
+      { label: "SEO", href: "/#services" },
+      { label: "AEO", href: "/#services" },
+      { label: "GEO", href: "/#services" },
+      { label: "AI Ad Creatives", href: "/#services" },
+      { label: "AI Automation", href: "/#services" },
     ],
   },
   {
@@ -107,7 +107,7 @@ export function Footer() {
               © {new Date().getFullYear()} BrandCure Agency. All rights reserved.
             </p>
             <p className="m-0 text-[11px] text-[rgba(255,255,255,0.5)]">
-              AI-First · Made in Chennai
+              Grow Differently. · A Grewbie company
             </p>
           </div>
         </div>

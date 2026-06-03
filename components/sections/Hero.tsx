@@ -3,15 +3,16 @@
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { StatItem } from "@/components/ui/StatItem";
+import { siteSettings } from "@/lib/mock-data";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useScrollY } from "@/hooks/useScrollY";
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { num: 3, suffix: "×", label: "faster than traditional agencies" },
-  { value: "Flex", label: "scope & pricing that adapt with you" },
-  { num: 30, suffix: " days", label: "average delivery time" },
-  { num: 100, suffix: "+", label: "businesses grown" },
+  { num: 3, suffix: "×", label: "faster with AI + a senior team" },
+  { value: "24–48h", label: "free audit, no sales pitch" },
+  { value: "~30 days", label: "to launch your new website" },
+  { value: "Founder-led", label: "senior attention, every client" },
 ];
 
 export function Hero() {
@@ -154,21 +155,27 @@ export function Hero() {
             id="hero-heading"
             className="mb-7 font-serif text-[clamp(3.25rem,8.5vw,6.75rem)] font-medium leading-[1.01] tracking-[-0.025em] text-brand-black"
           >
-            Cure your brand.
+            Stop losing leads
             <br />
-            <em className="font-medium italic text-gray">3× faster.</em>
+            <em className="font-medium italic text-gray">
+              you already paid for.
+            </em>
           </h1>
 
-          <p className="mb-11 max-w-[520px] text-[clamp(15px,1.4vw,18px)] font-light leading-[1.8] text-gray">
-            We build your website, run your marketing, and automate your
-            operations — in days, not months, with engagement options that fit
-            your scope and budget.
+          <p className="mb-11 max-w-[540px] text-[clamp(15px,1.4vw,18px)] font-light leading-[1.8] text-gray">
+            Every ad click, form fill, and WhatsApp message should turn into a
+            booked job. We build your website, run your marketing, and automate
+            the follow-up — so enquiries get replied to, qualified, and chased
+            automatically. Live in about 30 days.
           </p>
 
           <div className="flex flex-wrap gap-3">
-            <Button href="#contact">Get Free Audit →</Button>
-            <Button href="/portfolio?entry=see-work" variant="secondary">
-              See Our Work
+            <Button href="#contact">Get a Free Audit →</Button>
+            <Button
+              href={`https://wa.me/${siteSettings.whatsappNumber}`}
+              variant="secondary"
+            >
+              WhatsApp us
             </Button>
           </div>
         </div>

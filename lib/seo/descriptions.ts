@@ -13,10 +13,10 @@ export function metaDescription(text: string, max = META_DESC_MAX): string {
 
 /** Site-wide default — used in root layout and as fallback. */
 export const HOME_META_TITLE =
-  "BrandCure | Your AI-Native Digital Partner";
+  "AI Marketing Agency India | WhatsApp Automation | BrandCure";
 
 export const HOME_META_DESCRIPTION = metaDescription(
-  "Your digital partner to make your business AI-first: websites, AI marketing, WhatsApp automation & video ads. Free audit in 24–48 hours.",
+  "Stop losing leads you already paid for. BrandCure builds your website, runs AI marketing & automates WhatsApp follow-up. Free audit in 24–48 hrs.",
 );
 
 export const BLOG_INDEX_META_DESCRIPTION = metaDescription(

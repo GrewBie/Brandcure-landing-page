@@ -1,19 +1,19 @@
 # BrandCure
 
-> AI-first growth partner for websites, AI marketing, business automation, and video creatives.
+> AI-first growth partner for website development, SEO, AEO, GEO, AI ad creatives, and AI automation.
 
 ## Summary
 
-BrandCure (brandcure.in) is a digital agency based in Chennai, Tamil Nadu, India. We help SMBs, startups, and growing brands with website design and SEO, AI-powered marketing, WhatsApp/CRM automation, e-commerce growth, and AI video ad creatives. Engagement models are flexible (project or retainer). We offer a free digital audit to start.
+BrandCure (brandcure.in) is a digital agency based in Chennai, Tamil Nadu, India. We help SMBs, startups, and growing brands with website development, SEO (Search Engine Optimization), AEO (Answer Engine Optimization), GEO (Generative Engine Optimization to get cited by ChatGPT, Gemini, and Perplexity), AI ad creatives, and AI automation for WhatsApp, CRM, and workflows. Engagement models are flexible (project or retainer). We offer a free digital audit to start.
 
 ## Services
 
-- Digital Presence — website, local SEO, social media
-- AI Marketing — content, ads, email campaigns
-- Business Automation — WhatsApp, CRM, operations
-- Full-Stack Growth — website + marketing + automation in one retainer
-- E-commerce Growth — Shopify/WooCommerce, performance creative
-- AI Creatives & Video — reels, ads, brand films for Meta, YouTube, WhatsApp
+- Website Development — fast, high-converting websites live in 30 days
+- SEO — Search Engine Optimization for page-one Google rankings
+- AEO — Answer Engine Optimization for featured snippets and voice search
+- GEO — Generative Engine Optimization to get cited by ChatGPT, Gemini, and Perplexity
+- AI Ad Creatives — AI video ads, reels, and UGC for Meta, YouTube, WhatsApp
+- AI Automation — WhatsApp, CRM, and workflow automation that runs 24/7
 
 ## Location
 
@@ -22,7 +22,7 @@ Chennai, Tamil Nadu, India. We serve clients across India with a global-minded d
 ## Contact
 
 - Website: https://www.brandcure.in
-- Email: hello@brandcure.in
+- Email: contact@grewbie.com
 - WhatsApp: +91 88389 24425
 - Phone: +91 88389 24425
 

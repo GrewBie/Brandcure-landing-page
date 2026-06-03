@@ -31,10 +31,10 @@ export function WhyBrandCure() {
             id="why-heading"
             className="mb-16 font-serif text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[1.06] tracking-[-0.02em]"
           >
-            We build. They talk.
+            Why founders pick us
             <br />
             <em className="italic text-[rgba(255,255,255,0.28)]">
-              The difference is proof.
+              over a big agency.
             </em>
           </h2>
         </Reveal>

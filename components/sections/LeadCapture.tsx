@@ -72,8 +72,9 @@ export function LeadCapture() {
               <em className="italic text-gray">you customers?</em>
             </h2>
             <p className="mb-9 max-w-md text-sm leading-[1.8] text-gray">
-              We&apos;ll audit your website, SEO, social presence, and automation
-              gaps — and show you exactly what to fix. No sales pitch. Just data.
+              We&apos;ll audit your website, SEO, and follow-up gaps, then show you
+              exactly where enquiries are leaking and what to fix first. No sales
+              pitch — just a plain report in 24–48 hours.
             </p>
             <ul className="mb-11 flex flex-col gap-3.5">
               {auditChecklist.map((item) => (

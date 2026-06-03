@@ -18,6 +18,9 @@ const WhyBrandCure = dynamic(() =>
     default: m.WhyBrandCure,
   })),
 );
+const Founder = dynamic(() =>
+  import("@/components/sections/Founder").then((m) => ({ default: m.Founder })),
+);
 const Process = dynamic(() =>
   import("@/components/sections/Process").then((m) => ({ default: m.Process })),
 );
@@ -57,6 +60,7 @@ export default async function Home() {
       <Services />
       <Marquee />
       <WhyBrandCure />
+      <Founder />
       <Process />
       <Portfolio
         allProjects={allProjects}
