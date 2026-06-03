@@ -30,7 +30,7 @@ export const BRANDCURE_FAQ: FaqItem[] = [
   {
     question: "You're a new agency — why should I trust you?",
     answer:
-      "Because new is the advantage. You work directly with the founder, get senior people on the actual work instead of a junior hand-off, and founding-client pricing while we build our case studies. We'd rather show you honest concept and launch work — and prove it on your free audit — than hide behind inflated numbers.",
+      "Because new is the advantage. We're young founders, fresh out of college and a year deep building this startup — AI-native, fast, and genuinely hungry to earn your trust. You work directly with us instead of a junior hand-off, get founding-client pricing while we build our case studies, and our reputation rides on your result. We'd rather show you honest concept and launch work — and prove it on your free audit — than hide behind inflated numbers.",
   },
   {
     question: "How do I contact BrandCure?",

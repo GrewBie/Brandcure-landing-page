@@ -107,10 +107,11 @@ export function Founder() {
                 </p>
                 <p>
                   So we built BrandCure to fix exactly that — with AI systems
-                  that actually ship. We&apos;re new and growing, which means
-                  every client gets my direct attention, senior people on the
-                  real work, and founding-client pricing. You&apos;re not a
-                  ticket in a queue — you have my number.
+                  that actually ship. We&apos;re fresh out of college and a year
+                  deep into building this startup: hungry, fast, and hands-on.
+                  That means the founders do your work directly, you get our
+                  full attention, and founding-client pricing while we grow.
+                  You&apos;re not a ticket in a queue — you have my number.
                 </p>
               </div>
 
@@ -152,7 +153,7 @@ export function Founder() {
                 </h3>
               </div>
               <p className="max-w-sm text-sm leading-[1.8] text-gray">
-                Same senior team, work that meets a global standard — without
+                Same founding team, work that meets a global standard — without
                 agency-tier overheads. Here&apos;s how we keep it simple across
                 borders.
               </p>

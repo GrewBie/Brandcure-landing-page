@@ -79,12 +79,12 @@ export const whyPoints = [
   {
     title: "AI-native speed",
     description:
-      "AI drafts content, briefs, and reports; senior people own strategy and QA. That's how a new website goes live in about 30 days and campaigns launch in weeks, not quarters — without cutting corners on quality.",
+      "AI drafts content, briefs, and reports; the founders own strategy and QA personally. That's how a new website goes live in about 30 days and campaigns launch in weeks, not quarters — without cutting corners on quality.",
   },
   {
     title: "Founder-led ownership",
     description:
-      "You work directly with the people doing the work — no junior hand-offs, no account-manager telephone. One team owns your website, marketing, and automation, and one person picks up when you call.",
+      "You work directly with the founders doing the work — no hand-offs, no account-manager telephone. One small team owns your website, marketing, and automation, and one person picks up when you call.",
   },
   {
     title: "Built for India and beyond",

@@ -9,10 +9,10 @@ import { useScrollY } from "@/hooks/useScrollY";
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { num: 3, suffix: "×", label: "faster with AI + a senior team" },
+  { num: 3, suffix: "×", label: "faster with AI + a hands-on team" },
   { value: "24–48h", label: "free audit, no sales pitch" },
   { value: "~30 days", label: "to launch your new website" },
-  { value: "Founder-led", label: "senior attention, every client" },
+  { value: "Founder-led", label: "you work with founders, not interns" },
 ];
 
 export function Hero() {
