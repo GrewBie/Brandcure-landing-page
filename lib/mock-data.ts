@@ -79,7 +79,7 @@ export const whyPoints = [
   {
     title: "AI-native speed",
     description:
-      "AI drafts content, briefs, and reports; senior people own strategy and QA. That's how a new site goes live in about 30 days and campaigns launch in weeks, not quarters. [FILL: real client + turnaround, e.g. \"Aarav Clinic's site live in 18 days\"].",
+      "AI drafts content, briefs, and reports; senior people own strategy and QA. That's how a new website goes live in about 30 days and campaigns launch in weeks, not quarters — without cutting corners on quality.",
   },
   {
     title: "Founder-led ownership",

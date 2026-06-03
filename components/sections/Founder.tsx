@@ -19,7 +19,7 @@ const globalPoints = [
   },
   {
     title: "Clear scope, priced in your currency",
-    body: "Fixed-scope proposals and milestones in [FILL: USD / GBP / AED]. You approve before any work starts.",
+    body: "Fixed-scope proposals and milestones, billed in USD or your local currency. You approve before any work starts.",
   },
 ];
 

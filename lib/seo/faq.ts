@@ -25,7 +25,7 @@ export const BRANDCURE_FAQ: FaqItem[] = [
   {
     question: "How much does BrandCure cost?",
     answer:
-      "We don't publish a fixed price list because scope varies a lot — a one-page site is very different from a website plus ads plus automation. As a guide, most SMB projects start in the [FILL: ₹ starting range] range and retainers are billed monthly. Tell us your goal in the free audit and you'll get a clear, itemised quote before you commit a single rupee.",
+      "We don't publish a fixed price list because scope varies a lot — a one-page site is very different from a website plus ads plus automation. We offer both one-time project pricing and monthly retainers, sized to your stage and budget. Tell us your goal in the free audit and you'll get a clear, itemised quote before you commit a single rupee.",
   },
   {
     question: "You're a new agency — why should I trust you?",
